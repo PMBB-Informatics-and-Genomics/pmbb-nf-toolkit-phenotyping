@@ -1,0 +1,74 @@
+# event_mask_example.yaml — Event masking configuration
+#
+# Pass this file to the pipeline with:
+#   nextflow run main.nf --event_mask_config event_mask_example.yaml ...
+#
+# Each named event defines:
+#   source        : the phenotype_name of an existing diagnostic phenotype in your
+#                   biobank config (must produce per-code long.tsvs via preprocess)
+#   codes         : ICD codes that identify the event.
+#                   Bare codes (no dot) are prefix-matched: O83 → O83.0, O83.3, etc.
+#                   Dotted codes (e.g. O83.3) are exact matches.
+#                   YAML list or Python-style list both accepted.
+#   offset_before : days BEFORE the event date to start the mask window (negative int)
+#   offset_after  : days AFTER the event date to end the mask window (positive int)
+#
+# In your biobank phenotype config, opt a phenotype into one or more events:
+#   HbA1c:
+#     concept: quantitative
+#     event_mask: [third_trimester_pregnancy, first_trimester_loss]
+#     ...
+#
+# IMPORTANT: Event masking is skipped for phenotypes where date_col is not set.
+# When occurrence_date is synthetic (filled from reference_date), all observations
+# share the same date and window-based masking is meaningless. A warning is logged.
+#
+# DESIGN NOTE (Solution 1): Event windows are always computed from raw (unmasked)
+# long.tsvs. If a phenotype is both an event source and opts into masking by that
+# same event, the self-masking behavior is valid and intentional — event codes
+# that triggered a window will also be filtered from that phenotype during the window.
+# A warning is logged when this scenario is detected.
+
+events:
+
+  # ── Third trimester pregnancy ─────────────────────────────────────────────────
+  # Codes for documented deliveries and third-trimester encounters.
+  # Window: 9 months before (covers most of pregnancy) + 3 months after (postpartum).
+  third_trimester_pregnancy:
+    source: ICD10
+    codes:
+      - O80        # spontaneous vertex delivery (prefix: O80.*)
+      - O82        # cesarean delivery (prefix: O82.*)
+      - O83        # other assisted deliveries (prefix: O83.*)
+      - O84        # multiple gestation delivery (prefix: O84.*)
+      - Z37        # outcome of delivery (prefix: Z37.*)
+      - Z38        # liveborn infants (prefix: Z38.*)
+    offset_before: -270   # 9 months before event date
+    offset_after: 90      # 3 months after event date
+
+  # ── First trimester pregnancy loss ────────────────────────────────────────────
+  # Spontaneous abortion, missed abortion, ectopic pregnancy.
+  # Window: 3 months before + 1 month after.
+  first_trimester_loss:
+    source: ICD10
+    codes:
+      - O03        # spontaneous abortion
+      - O04        # complications following (induced) termination
+      - O20.0      # threatened abortion (exact match)
+      - O00        # ectopic pregnancy
+    offset_before: -90
+    offset_after: 30
+
+  # ── ICD9 deliveries (multi-source example) ────────────────────────────────────
+  # If your biobank has a separate ICD9 diagnostic phenotype, define it here.
+  # The source must match the phenotype_name of an ICD9 diagnostic phenotype
+  # in your biobank config (e.g., 'ICD9' or 'ICD9_LEGACY').
+  #
+  # third_trimester_pregnancy_icd9:
+  #   source: ICD9
+  #   codes:
+  #     - "650"     # normal delivery
+  #     - "651"     # multiple gestation
+  #     - "V27"     # outcome of delivery
+  #   offset_before: -270
+  #   offset_after: 90

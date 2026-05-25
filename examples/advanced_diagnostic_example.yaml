@@ -1,0 +1,106 @@
+# Advanced diagnostic phenotype example — concept: advanced_diagnostic
+#
+# Use advanced_diagnostic when you want a single named case/control column built
+# from ICD code patterns (e.g. "T2Diab: 1/0/NA") rather than one column per code.
+#
+# Key differences from concept: diagnostic
+#   - Produces one output column per phenotype (not one per ICD code)
+#   - Reads from one or more existing diagnostic phenotypes via from_phenotype
+#   - Supports case/exclude logic across multiple code sources (e.g. ICD10 + ICD9)
+#   - Bare codes (no dot) are prefix-matched: E11 → matches E11.9, E11.65, etc.
+#   - Dotted codes (e.g. E10.5) are exact matches
+#
+# The basic diagnostic phenotype that feeds each source must also be defined in
+# your config (see basic_config_example.yaml for ICD10 setup).
+
+global:
+  sample_id_col: PMBB_ID
+  reference_date: "2024-01-01"
+
+concepts:
+  diagnostic:
+    min_occurrences: 1
+    missing_as_control: false
+
+phenotypes:
+
+  # The basic diagnostic phenotype that provides the raw long.tsvs.
+  # advanced_diagnostic phenotypes reference this via from_phenotype.
+  ICD10:
+    table: /path/to/icd.txt
+    concept: diagnostic
+    value_col: ICD_CODE
+    filter:
+      CODE_TYPE: [ICD10]
+    subsample: all
+
+  # ── Example 1: case + case_exclude ───────────────────────────────────────────
+  # Type 2 Diabetes: E11 family is the case; E10/E12/E13 override to 0.
+  # min_occurrences applies per individual code, not per patient total.
+
+  T2Diab:
+    concept: advanced_diagnostic
+    missing_as_control: false
+    min_occurrences: 1
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - E11       # prefix match: E11.9, E11.65, E11.319, etc.
+          - O24.1     # exact match (has a dot)
+        case_exclude:
+          - E10       # type 1 diabetes overrides case
+          - E12
+          - E13
+
+  # ── Example 2: case + control_exclude ────────────────────────────────────────
+  # Abdominal Aortic Aneurysm: I71 is case; vascular disease codes → ambiguous
+  # controls are set to NA rather than 0.
+
+  AAA:
+    concept: advanced_diagnostic
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - I71
+        control_exclude:
+          - I70       # peripheral artery disease — not a clean control
+          - I72
+          - I73
+
+  # ── Example 3: case only (no exclusions) ─────────────────────────────────────
+  # Endometriosis: all N80.* codes are cases; no exclusion rules needed.
+
+  Endometriosis:
+    concept: advanced_diagnostic
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - N80
+
+  # ── Example 4: multi-source (ICD10 + ICD9) ───────────────────────────────────
+  # When your biobank has both ICD9 and ICD10 tables, define both as basic
+  # diagnostic phenotypes and reference them in separate sources.
+  # Patterns from all sources are pooled before case/control assignment.
+
+  # ICD9:
+  #   table: /path/to/icd9.txt
+  #   concept: diagnostic
+  #   value_col: ICD_CODE
+  #   filter:
+  #     CODE_TYPE: [ICD9]
+  #   subsample: all
+  #
+  # Gout_multisource:
+  #   concept: advanced_diagnostic
+  #   sources:
+  #     ICD10:
+  #       from_phenotype: ICD10
+  #       case_codes: [M10]
+  #       control_exclude: [M11]
+  #     ICD9:
+  #       from_phenotype: ICD9
+  #       case_codes: ["274"]
+  #       control_exclude: ["712"]

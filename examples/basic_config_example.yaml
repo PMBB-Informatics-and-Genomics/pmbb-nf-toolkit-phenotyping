@@ -1,0 +1,159 @@
+# Basic biobank config example — quantitative, categorical, and diagnostic phenotypes.
+#
+# Parameters cascade: global: → concepts.<type>: → individual phenotype block.
+# Later levels override earlier ones.
+#
+# See also: examples/advanced_diagnostic_example.yaml for advanced_diagnostic phenotypes.
+
+global:
+  sample_id_col: PMBB_ID
+  date_col: RESULT_DATE_SHIFT
+  outlier_method: iqr
+  outlier_mode: cap
+  outlier_iqr_multiplier: 1.5
+  reference_date: "2024-01-01"
+  # sep: delimiter used to read raw input tables.
+  #   Named aliases : tsv, tab, csv, comma, pipe, space, whitespace
+  #   Raw character : any single character (must be double-quoted in YAML, e.g. sep: "|")
+  #   whitespace    : matches any run of whitespace (\s+); do not use for TSV
+  #                   files whose field values may contain spaces.
+  # When omitted, the delimiter is auto-detected from the file extension:
+  #   .tsv -> tab, .csv -> comma, .txt -> tab, other -> comma
+  # sep: tsv
+
+concepts:
+  quantitative:
+    stats: [mean, median, std]
+    qcut_bins: 0
+    scale: false
+    scale_method: zscore
+    min_occurrences: 1
+    # risk_classification: applied to all quantitative phenotypes by default.
+    # Omit this block entirely to disable risk classification globally.
+    # Override per-phenotype or opt out with risk_classification: false.
+    risk_classification:
+      method: percentile   # percentile | threshold | quantile_bin
+      stat: mean           # which aggregated stat column to classify on
+      high: 90             # value > p90 → 1 (high risk)
+      low: 10              # value < p10 → 1 (also flagged high risk)
+  categorical:
+    missing_as_control: false
+    one_hot: false
+    min_occurrences: 1
+  diagnostic:
+    min_occurrences: 1
+    missing_as_control: false
+
+phenotypes:
+
+  # ── Quantitative ─────────────────────────────────────────────────────────────
+
+  BMI:
+    table: /path/to/vitals_BMI.txt
+    concept: quantitative
+    value_col: BMI_VALUE
+    qcut_bins: 4
+    output_name: BMI_quartile
+    # Override: classify into quartiles; flag top and bottom quartile as high-risk
+    risk_classification:
+      method: quantile_bin
+      n: 4
+      high: 1            # top 1 bin (Q4) → 1
+      low: 1             # bottom 1 bin (Q1) → 1
+
+  cholesterol:
+    table: /path/to/labs_lipids.txt
+    concept: quantitative
+    value_col: RESULT_VALUE_NUM
+    sep: pipe           # overrides global sep for this phenotype only
+    filter:
+      MEASUREMENT_TYPE: ["*DL"]    # glob wildcard: matches HDL, LDL, VLDL
+    stats: [mean, std]
+    # Override: multi-level output (low / borderline / high) using fixed thresholds
+    risk_classification:
+      method: threshold
+      cutoffs: [200, 240]          # < 200 → level 0, 200–240 → level 1, > 240 → level 2
+      labels: [normal, borderline, high]
+
+  HDLC:
+    table: /path/to/labs_lipids.txt
+    concept: quantitative
+    value_col: RESULT_VALUE_NUM
+    filter:
+      MEASUREMENT_TYPE: [HDL]
+    # Opt out: HDL is directional (higher = better); skip generic risk classification
+    risk_classification: false
+
+  # threshold — binary: fixed absolute cutoffs, no data-driven computation.
+  # Use when clinical thresholds are well-established (e.g. ACC/AHA BP guidelines).
+  # high/low are raw values, not percentiles.
+  BP_systolic:
+    table: /path/to/vitals_BP.txt
+    concept: quantitative
+    value_col: SYSTOLIC_VALUE
+    risk_classification:
+      method: threshold
+      high: 130              # > 130 mmHg → 1 (Stage 1 hypertension)
+      low: 90                # < 90 mmHg → 1 (hypotension)
+
+  # percentile — multi-level: N cutoffs (as percentiles) → N+1 integer levels.
+  # Use cutoffs instead of high/low for ordered multi-class output.
+  # Optional labels replace integer levels (must have length N+1).
+  HbA1c:
+    table: /path/to/labs_hba1c.txt
+    concept: quantitative
+    value_col: RESULT_VALUE_NUM
+    risk_classification:
+      method: percentile
+      cutoffs: [33, 67]      # p33 and p67 divide cohort into tertiles
+      labels: [low, moderate, high]   # level 0 → low, 1 → moderate, 2 → high
+
+  # quantile_bin — multi-level: equal-frequency bins via pd.qcut; all bins as output levels.
+  # Omit high/low to get all bin indices (or labels) as output instead of collapsing to binary.
+  # Useful for downstream analyses that need the full distributional split.
+  creatinine:
+    table: /path/to/labs_creatinine.txt
+    concept: quantitative
+    value_col: RESULT_VALUE_NUM
+    risk_classification:
+      method: quantile_bin
+      n: 5                   # quintiles: Q1 (lowest) … Q5 (highest)
+      labels: [Q1, Q2, Q3, Q4, Q5]
+
+  # ── Categorical ───────────────────────────────────────────────────────────────
+
+  SEX:
+    table: /path/to/covariates.txt
+    concept: categorical
+    value_col: SEX
+    dictionary:
+      male: 0
+      female: 1
+      unknown: NA
+
+  ANCESTRY:
+    table: /path/to/covariates.txt
+    concept: categorical
+    value_col: ANCESTRY
+    one_hot: true
+    categories: [AFR, EUR, AMR, EAS, SAS, OTH]
+
+  # ── Diagnostic (basic) ────────────────────────────────────────────────────────
+  # Each unique code becomes its own binary output column.
+
+  ICD10_codes:
+    table: /path/to/icd.txt
+    concept: diagnostic
+    value_col: ICD_CODE
+    filter:
+      CODE_TYPE: [ICD10]
+    subsample: all              # each unique code becomes its own phenotype column
+    # subsample: [N80, "E11.*"] # or: specific codes only (wildcards ok)
+
+  # ── Preprocessed shortcut ─────────────────────────────────────────────────────
+  # Skip PREPROCESS entirely — pass a pre-built long-format TSV directly.
+
+  HDLC_preprocessed:
+    preprocessed_path: /already/done/hdlc.tsv
+    concept: quantitative
+    output_name: HDLC
