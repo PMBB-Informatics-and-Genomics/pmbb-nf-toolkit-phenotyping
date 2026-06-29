@@ -1,0 +1,227 @@
+# Basic biobank config example — quantitative, categorical, and coded phenotypes.
+#
+# Parameters cascade: global: → data_types.<type>: → individual phenotype block.
+# Later levels override earlier ones.
+#
+# See also: examples/advanced_coded_example.yaml for advanced_coded phenotypes.
+
+global:
+  sample_id_col: PMBB_ID
+  date_col: RESULT_DATE_SHIFT
+  outlier_method: iqr
+  outlier_mode: cap
+  outlier_iqr_multiplier: 1.5
+  reference_date: "2024-01-01"
+  # sep: delimiter used to read raw input tables.
+  #   Named aliases : tsv, tab, csv, comma, pipe, space, whitespace
+  #   Raw character : any single character (must be double-quoted in YAML, e.g. sep: "|")
+  #   whitespace    : matches any run of whitespace (\s+); do not use for TSV
+  #                   files whose field values may contain spaces.
+  # When omitted, the delimiter is auto-detected from the file extension:
+  #   .tsv -> tab, .csv -> comma, .txt -> tab, other -> comma
+  # sep: tsv
+
+data_types:
+  quantitative:
+    stats: [mean, median, std]
+    qcut_bins: 0
+    scale: false
+    scale_method: zscore
+    min_occurrences: 1
+    # risk_classification: applied to all quantitative phenotypes by default.
+    # Omit this block entirely to disable risk classification globally.
+    # Override per-phenotype or opt out with risk_classification: false.
+    risk_classification:
+      method: percentile   # percentile | threshold | quantile_bin
+      stat: mean           # which aggregated stat column to classify on
+      high: 90             # value > p90 → 1 (high risk)
+      low: 10              # value < p10 → 1 (also flagged high risk)
+  categorical:
+    missing_as_control: false
+    one_hot: false
+    min_occurrences: 1
+  coded:
+    min_occurrences: 1
+    missing_as_control: false
+
+phenotypes:
+
+  # ── Quantitative ─────────────────────────────────────────────────────────────
+
+  BMI:
+    table: /path/to/vitals_BMI.txt
+    data_type: quantitative
+    value_col: BMI_VALUE
+    qcut_bins: 4
+    output_name: BMI_quartile
+    # Override: classify into quartiles; flag top and bottom quartile as high-risk
+    risk_classification:
+      method: quantile_bin
+      n: 4
+      high: 1            # top 1 bin (Q4) → 1
+      low: 1             # bottom 1 bin (Q1) → 1
+
+  cholesterol:
+    table: /path/to/labs_lipids.txt
+    data_type: quantitative
+    value_col: RESULT_VALUE_NUM
+    sep: pipe           # overrides global sep for this phenotype only
+    filter:
+      MEASUREMENT_TYPE: ["*DL"]    # glob wildcard: matches HDL, LDL, VLDL
+    stats: [mean, std]
+    # Override: multi-level output (low / borderline / high) using fixed thresholds
+    risk_classification:
+      method: threshold
+      cutoffs: [200, 240]          # < 200 → level 0, 200–240 → level 1, > 240 → level 2
+      labels: [normal, borderline, high]
+
+  HDLC:
+    table: /path/to/labs_lipids.txt
+    data_type: quantitative
+    value_col: RESULT_VALUE_NUM
+    filter:
+      MEASUREMENT_TYPE: [HDL]
+    # Opt out: HDL is directional (higher = better); skip generic risk classification
+    risk_classification: false
+
+  # threshold — binary: fixed absolute cutoffs, no data-driven computation.
+  # Use when clinical thresholds are well-established (e.g. ACC/AHA BP guidelines).
+  # high/low are raw values, not percentiles.
+  BP_systolic:
+    table: /path/to/vitals_BP.txt
+    data_type: quantitative
+    value_col: SYSTOLIC_VALUE
+    risk_classification:
+      method: threshold
+      high: 130              # > 130 mmHg → 1 (Stage 1 hypertension)
+      low: 90                # < 90 mmHg → 1 (hypotension)
+
+  # percentile — multi-level: N cutoffs (as percentiles) → N+1 integer levels.
+  # Use cutoffs instead of high/low for ordered multi-class output.
+  # Optional labels replace integer levels (must have length N+1).
+  HbA1c:
+    table: /path/to/labs_hba1c.txt
+    data_type: quantitative
+    value_col: RESULT_VALUE_NUM
+    risk_classification:
+      method: percentile
+      cutoffs: [33, 67]      # p33 and p67 divide cohort into tertiles
+      labels: [low, moderate, high]   # level 0 → low, 1 → moderate, 2 → high
+
+  # quantile_bin — multi-level: equal-frequency bins via pd.qcut; all bins as output levels.
+  # Omit high/low to get all bin indices (or labels) as output instead of collapsing to binary.
+  # Useful for downstream analyses that need the full distributional split.
+  creatinine:
+    table: /path/to/labs_creatinine.txt
+    data_type: quantitative
+    value_col: RESULT_VALUE_NUM
+    risk_classification:
+      method: quantile_bin
+      n: 5                   # quintiles: Q1 (lowest) … Q5 (highest)
+      labels: [Q1, Q2, Q3, Q4, Q5]
+
+  # ── Categorical ───────────────────────────────────────────────────────────────
+
+  SEX:
+    table: /path/to/covariates.txt
+    data_type: categorical
+    value_col: SEX
+    dictionary:
+      male: 0
+      female: 1
+      unknown: NA
+
+  ANCESTRY:
+    table: /path/to/covariates.txt
+    data_type: categorical
+    value_col: ANCESTRY
+    one_hot: true
+    categories: [AFR, EUR, AMR, EAS, SAS, OTH]
+
+  # ── Coded ────────────────────────────────────────────────────────────────────
+  # data_type: coded works with any code vocabulary. Each row in value_col is a
+  # code occurrence; each unique matching code becomes its own binary output column.
+  # Use subsample to restrict to codes of interest; subsample: all = every code.
+  # Use prefix_matching: false for non-hierarchical vocabularies (CPT, LOINC, SNOMED,
+  # phecodes) where bare codes should not prefix-match sub-codes.
+
+  # ICD-10-CM — hierarchical; prefix matching on by default.
+  # E.g. subsample: [E11] expands to one column covering E11.9, E11.65, etc.
+  #
+  # filter: narrows rows BEFORE any code matching. Here the source table stores
+  # both ICD9 and ICD10 codes in a single file; CODE_TYPE is a column in that
+  # table and [ICD10] is the list of values to keep. Remove the filter block
+  # entirely if your table already contains only one code type.
+  ICD10:
+    table: /path/to/icd.txt
+    data_type: coded
+    value_col: ICD_CODE
+    filter:
+      CODE_TYPE: [ICD10]        # keep only rows where CODE_TYPE == "ICD10"
+    subsample: all              # each unique code → its own phenotype column
+    # subsample: [N80, "E11.*"] # or: specific codes only (wildcards ok)
+
+  # ICD-9-CM — hierarchical; same setup as ICD10.
+  # ICD9:
+  #   table: /path/to/icd9.txt
+  #   data_type: coded
+  #   value_col: ICD_CODE
+  #   filter:
+  #     CODE_TYPE: [ICD9]
+  #   subsample: all
+
+  # CPT — non-hierarchical procedure codes; use prefix_matching: false so that
+  # bare code "99213" does not accidentally match "99213.1" or similar variants.
+  CPT:
+    table: /path/to/procedures.txt
+    data_type: coded
+    value_col: CPT_CODE
+    prefix_matching: false      # CPT codes are not hierarchical
+    subsample:
+      - "99213"                 # office visit, established patient (level 3)
+      - "99214"                 # office visit, established patient (level 4)
+      - "27447"                 # total knee arthroplasty
+      - "33533"                 # CABG, arterial, single
+
+  # LOINC — exact numeric identifiers for lab/observation concepts.
+  # prefix_matching: false because LOINC codes are exact identifiers, not hierarchical.
+  LOINC:
+    table: /path/to/labs.txt
+    data_type: coded
+    value_col: LOINC_CODE
+    prefix_matching: false
+    subsample:
+      - "4548-4"                # HbA1c (%)
+      - "2345-7"                # Glucose [Mass/volume] in Serum or Plasma
+      - "2089-1"                # LDL Cholesterol
+      - "2085-9"                # HDL Cholesterol
+
+  # SNOMED CT — numeric concept IDs; use prefix_matching: false.
+  # SNOMED has its own concept hierarchy but it is NOT encoded in the concept ID
+  # itself, so bare-code prefix matching does not apply.
+  SNOMED:
+    table: /path/to/snomed.txt
+    data_type: coded
+    value_col: SNOMED_CODE
+    prefix_matching: false
+    subsample:
+      - "44054006"              # Type 2 diabetes mellitus
+      - "73211009"              # Diabetes mellitus
+      - "53741008"              # Coronary arteriosclerosis
+
+  # Phecodes — derived phenotypes mapped from ICD codes; exact identifiers.
+  # prefix_matching: false because phecode "250.2" should not match "250.21".
+  Phecodes:
+    table: /path/to/phecodes.txt
+    data_type: coded
+    value_col: PHECODE
+    prefix_matching: false
+    subsample: all
+
+  # ── Preprocessed shortcut ─────────────────────────────────────────────────────
+  # Skip PREPROCESS entirely — pass a pre-built long-format TSV directly.
+
+  HDLC_preprocessed:
+    preprocessed_path: /already/done/hdlc.tsv
+    data_type: quantitative
+    output_name: HDLC

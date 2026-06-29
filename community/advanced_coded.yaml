@@ -1,0 +1,1001 @@
+# community/advanced_codeds.yaml
+#
+# Advanced coded phenotype definitions for use with pmbb-nf-toolkit-phenotyping.
+# These are biobank-agnostic ICD-10 case/control definitions with no file paths.
+#
+# Sources:
+#   - Penn Medicine BioBank (PMBB): obstetric, cardiometabolic, and other conditions
+#     validated in EHR data from the University of Pennsylvania Health System
+#   - BraVa (Backman et al. 2021, Nature): ~200 UK Biobank exome-wide phenotypes
+#     https://doi.org/10.1038/s41586-021-04103-z
+#
+# Usage:
+#   Copy phenotype entries into your biobank config's phenotypes: section.
+#   Requires a coded phenotype named "ICD10" already defined in your config
+#   (see examples/ for templates).
+#
+#   phenotypes:
+#     ICD10:
+#       data_type: coded
+#       table: /path/to/your/icd10.tsv
+#       value_col: condition_source_value
+#     # paste entries from this file below:
+#     T2Diab:
+#       data_type: advanced_coded
+#       ...
+#
+# Code format:
+#   Bare codes (no dot, e.g. E11) are prefix-matched: E11 → E11.0, E11.1, etc.
+#   Dotted codes (e.g. E11.65) are exact matches.
+
+phenotypes:
+  PretermBirth:
+    data_type: advanced_coded
+    missing_as_control: false
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: [O09.21, O42.01, O42.11, O42.91, O60.1, Z87.51]
+  
+  T2Diab:
+    data_type: advanced_coded
+    missing_as_control: false
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - E11
+          - O24.1
+        case_exclude:
+          - E10
+          - E12
+          - E13
+
+  AAA:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I71']
+        control_exclude: ['E10.5', 'E11.5', 'E14.5', 'I25.0', 'I67.0', 'I70', 'I70.0', 'I70.1', 'I70.2', 'I70.8', 'I70.9', 'I71.0', 'I71.1', 'I71.2', 'I71.5', 'I71.6', 'I71.8', 'I71.9', 'I72', 'I72.0', 'I72.1', 'I72.2', 'I72.3', 'I72.4', 'I72.8', 'I72.9', 'I73', 'I73.0', 'I73.1', 'I73.8', 'I73.9', 'I74', 'I74.0', 'I74.1', 'I74.2', 'I74.3', 'I74.4', 'I74.5', 'I74.8', 'I74.9', 'I77', 'I77.0', 'I77.1', 'I77.2', 'I77.3', 'I77.4', 'I77.5', 'I77.6', 'I77.8', 'I77.9', 'I78', 'I78.0', 'I78.8', 'I78.9', 'I79.0', 'I79.1', 'I79.2', 'I79.8', 'K55', 'K55.0', 'K55.1', 'K55.8', 'K55.9', 'M05.2', 'M30', 'M30.0', 'M30.1', 'M30.2', 'M30.3', 'M30.8', 'M31.0', 'M31.1', 'M31.2', 'M31.3', 'M31.4', 'M31.5', 'M31.6', 'M31.8', 'M31.9', 'Q27.3', 'I77.89', 'I74.11', 'I77.77', 'I77.7', 'I77.73', 'I77.76', 'I77.75', 'I77.74', 'I77.70', 'I77.79', 'I77.71', 'I77.72', 'M31.7', 'I70.743', 'I70.728', 'I70.302', 'I70.569', 'I70.42', 'I70.532', 'I70.223', 'I70.31', 'I70.648', 'I70.528', 'I70.411', 'I70.443', 'I70.599', 'I70.429', 'I70.631', 'I70.398', 'I70.368', 'I70.518', 'I70.445', 'I70.548', 'I70.542', 'I70.523', 'I70.535', 'I70.512', 'I70.72', 'I70.468', 'I70.645', 'I70.639', 'I70.621', 'I70.541', 'I70.56', 'I70.361', 'I70.75', 'I70.538', 'I70.434', 'I70.422', 'I70.208', 'I70.662', 'I70.533', 'I70.201', 'I70.76', 'I70.311', 'I70.313', 'I70.498', 'I70.492', 'I70.318', 'I70.209', 'I70.731', 'I70.693', 'I70.338', 'I70.521', 'I70.92', 'I70.768', 'I70.444', 'I70.508', 'I70.60', 'I70.49', 'I70.609', 'I70.591', 'I70.342', 'I70.221', 'I70.769', 'I70.343', 'I70.328', 'I70.321', 'I70.421', 'I70.69', 'I70.36', 'I70.52', 'I70.35', 'I70.298', 'I70.692', 'I70.744', 'I70.669', 'I70.634', 'I70.30', 'I70.413', 'I70.661', 'I70.408', 'I70.369', 'I70.79', 'I70.702', 'I70.339', 'I70.299', 'I70.628', 'I70.735', 'I70.46', 'I70.292', 'I70.229', 'I70.291', 'I70.428', 'I70.622', 'I70.663', 'I70.322', 'I70.749', 'I70.442', 'I70.745', 'I70.644', 'I70.799', 'I70.323', 'I70.791', 'I70.729', 'I70.721', 'I70.45', 'I70.401', 'I70.461', 'I70.423', 'I70.402', 'I70.563', 'I70.708', 'I70.763', 'I70.619', 'I70.70', 'I70.719', 'I70.348', 'I70.713', 'I70.22', 'I70.392', 'I70.334', 'I70.503', 'I70.62', 'I70.608', 'I70.344', 'I70.701', 'I70.319', 'I70.519', 'I70.703', 'I70.534', 'I70.632', 'I70.742', 'I70.738', 'I70.549', 'I70.412', 'I70.40', 'I70.529', 'I70.293', 'I70.543', 'I70.718', 'I70.623', 'I70.301', 'I70.61', 'I70.712', 'I70.633', 'I70.643', 'I70.329', 'I70.409', 'I70.668', 'I70.341', 'I70.509', 'I70.792', 'I70.50', 'I70.449', 'I70.545', 'I70.332', 'I70.335', 'I70.491', 'I70.439', 'I70.469', 'I70.203', 'I70.613', 'I70.723', 'I70.602', 'I70.308', 'I70.748', 'I70.635', 'I70.391', 'I70.561', 'I70.501', 'I70.432', 'I70.568', 'I70.493', 'I70.592', 'I70.761', 'I70.502', 'I70.601', 'I70.32', 'I70.798', 'I70.418', 'I70.511', 'I70.435', 'I70.441', 'I70.433', 'I70.638', 'I70.711', 'I70.393', 'I70.709', 'I70.51', 'I70.499', 'I70.312', 'I70.362', 'I70.539', 'I70.448', 'I70.531', 'I70.20', 'I70.39', 'I70.762', 'I70.629', 'I70.345', 'I70.593', 'I70.722', 'I70.222', 'I70.513', 'I70.734', 'I70.71', 'I70.733', 'I70.642', 'I70.739', 'I70.29', 'I70.309', 'I70.419', 'I70.611', 'I70.612', 'I70.228', 'I70.699', 'I70.732', 'I70.65', 'I70.603', 'I70.598', 'I70.698', 'I70.649', 'I70.399', 'I70.303', 'I70.403', 'I70.41', 'I70.438', 'I70.431', 'I70.349', 'I70.618', 'I70.59', 'I70.562', 'I70.331', 'I70.544', 'I70.363', 'I70.202', 'I70.333', 'I70.55', 'I70.793', 'I70.522', 'I70.66', 'I70.463', 'I70.741', 'I70.641', 'I70.691', 'I70.462', 'I70.91', 'I70.90', 'I77.811', 'I77.819', 'I77.812', 'I77.810', 'I77.81', 'I75.021', 'I75.023', 'I75.0', 'I75.01', 'I75.02', 'I75.8', 'I75.013', 'I75', 'I75.89', 'I75.022', 'I75.029', 'I75.011', 'I75.012', 'I75.019', 'I75.81', 'M31.31', 'M31.30', 'I73.89', 'I73.81', 'I72.6', 'D47.01', 'I73.01', 'I73.00', 'I74.01', 'I74.09', 'I74.19', 'I74.10', 'I70.262', 'I70.249', 'I70.263', 'I70.244', 'I70.231', 'I70.241', 'I70.248', 'I70.232', 'I70.261', 'I70.269', 'I70.242', 'I70.25', 'I70.26', 'I70.245', 'I70.235', 'I70.239', 'I70.268', 'I70.238', 'I70.234', 'I70.233', 'I70.243', 'I70.212', 'I70.21', 'I70.218', 'I70.211', 'I70.219', 'I70.213', 'K55.029', 'K55.061', 'K55.049', 'K55.031', 'K55.03', 'K55.02', 'K55.012', 'K55.021', 'K55.019', 'K55.052', 'K55.059', 'K55.039', 'K55.042', 'K55.06', 'K55.041', 'K55.05', 'K55.04', 'K55.062', 'K55.01', 'K55.069', 'K55.032', 'K55.051', 'K55.022', 'K55.011', 'I71.00', 'I71.03', 'I71.01', 'I71.02']
+
+  Endometriosis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - N80
+
+  Gout:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - M10
+        control_exclude:
+          - M11
+
+  Hypothyroidism:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - E03
+        case_exclude:
+          - E03.2
+          - E03.3
+          - E89.0
+
+  # ── BraVa Phenotypes ────────────────────────────────────────────────────────
+  # Source: brava-phenotypes.tsv  (Backman et al., BraVa UK Biobank phenome-wide study)
+
+  # Acute Appendicitis
+  AcApp:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K35', 'K35.0', 'K35.1', 'K35.9', 'K35.3', 'K35.89', 'K35.2', 'K35.80', 'K35', 'K35.8']
+        control_exclude: ['K36', 'K37', 'K38', 'K38.0', 'K38.1', 'K38.2', 'K38.3', 'K38.8', 'K38.9', 'K37', 'K36', 'K38.3', 'K38.8', 'K38.2', 'K38.0', 'K38.9', 'K38', 'K38.1']
+
+  # Acute Lymphocytic Leukemia (C91.0 = ALL; C91.2/3/6 = related subtypes)
+  AcuLymLeuk:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C91.0', 'C91.2', 'C91.3', 'C91.6']
+
+  # Adenomyosis
+  Adenomy:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N80.0']
+        control_exclude: ['N80.1', 'N80.2', 'N80.3', 'N80.4', 'N80.5', 'N80.6', 'N80.8', 'N80.9']
+
+  # Age-Related Macular Degeneration
+  AMD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['H35.3']
+
+  # AL Amyloidosis (light-chain)
+  ALamy:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E85.9']
+
+  # Alcohol Use Disorder
+  AUD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F10.10', 'F10.120', 'F10.121', 'F10.129', 'F10.14', 'F10.150', 'F10.151', 'F10.159', 'F10.180', 'F10.181', 'F10.182', 'F10.188', 'F10.19', 'F10.20', 'F10.21', 'F10.220', 'F.10.221', 'F10.229', 'F10.230', 'F10.231', 'F10.232', 'F10.239', 'F10.24', 'F10.250', 'F10.251', 'F10.259']
+
+  # Alopecia Areata
+  AloAre:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['L63.9']
+
+  # Anorexia Nervosa
+  AnoNer:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F50.0', 'F50.1']
+
+  # Aortic Stenosis (non-rheumatic)
+  AoSten:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I35.0']
+        control_exclude: ['Q20', 'Q21', 'Q22', 'Q23']
+
+  # Asthma
+  Asth:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['J45', 'J45.0', 'J45.1', 'J45.8', 'J45.9', 'J46', 'J45.31', 'J45.901', 'J45.42', 'J45.41', 'J45.51', 'J45.990', 'J45.902', 'J45.21', 'J45.52', 'J45.32', 'J45.22', 'J45.909', 'J45.998', 'J45.40', 'J45.20', 'J45', 'J45.991', 'J45.90', 'J45.30', 'J45.50']
+        control_exclude: ['J40', 'J41', 'J41.0', 'J41.1', 'J41.8', 'J42', 'J43', 'J43.0', 'J43.1', 'J43.2', 'J43.8', 'J43.9', 'J44', 'J44.0', 'J44.1', 'J44.8', 'J44.9', 'J47', 'J44.1', 'J44', 'J44.0', 'J47.1', 'J47.9', 'J47.0', 'J47', 'J43.2', 'J43.0', 'J43.1', 'J43.8', 'J43.9', 'J43', 'J40', 'J41.8', 'J42', 'J41.1', 'J41.0', 'J41', 'J98.01', 'J44.9']
+
+  # Atopic Dermatitis
+  AtopDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['L20']
+
+  # Atrial Fibrillation
+  AFib:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I48', 'I48.0', 'I48.1', 'I48.2', 'I48.4', 'I48.4', 'I48.9']
+
+  # Attention Deficit Hyperactivity Disorder
+  ADHD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F90', 'F90.0', 'F90.1', 'F90.2', 'F90.8', 'F90.9']
+        control_exclude: ['F20', 'F21', 'F22', 'F23', 'F24', 'F25', 'F28', 'F29', 'F30', 'F31', 'F32', 'F33', 'F34', 'F38', 'F39', 'F70', 'F71', 'F72', 'F73', 'F78', 'F79', 'F50.0', 'F50.00', 'F50.01', 'F50.02', 'F84.0', 'F84.1', 'F84.5', 'F84.8', 'F84.9', 'F90', 'F90.0', 'F90.1', 'F90.2', 'F90.8', 'F90.9']
+
+  # Autism Spectrum Disorder
+  ASD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F84.0', 'F84.1', 'F84.5', 'F84.8', 'F84.9']
+        control_exclude: ['F20', 'F21', 'F22', 'F23', 'F24', 'F25', 'F28', 'F29', 'F30', 'F31', 'F32', 'F33', 'F34', 'F38', 'F39', 'F70', 'F71', 'F72', 'F73', 'F78', 'F79', 'F50.0', 'F50.00', 'F50.01', 'F50.02', 'F84.0', 'F84.1', 'F84.5', 'F84.8', 'F84.9', 'F90', 'F90.0', 'F90.1', 'F90.2', 'F90.8', 'F90.9']
+
+  # B-cell Chronic Lymphocytic Leukemia
+  BCLL:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C91.1']
+
+  # Benign Cervical and Uterine Neoplasm (CIN, polyps, fibroids)
+  BenCervUterNeo:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D07.0', 'D39.0', 'D06', 'D06.0', 'D06.1', 'D06.7', 'D06.9', 'D26.0', 'D26.1', 'D26.7', 'D26.9', 'N84.0', 'N84.1', 'N87', 'N87.0', 'N87.1', 'N87.2', 'N87.9']
+
+  # Benign Intestinal Neoplasm (colonic polyps, carcinoid, adenomas)
+  BenIntNeo:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D13.9', 'E34.0', 'K63.5', 'D01', 'D01.0', 'D01.1', 'D01.2', 'D01.3', 'D01.4', 'D01.5', 'D01.7', 'D01.9', 'D12', 'D12.0', 'D12.1', 'D12.2', 'D12.3', 'D12.4', 'D12.5', 'D12.6', 'D12.7', 'D12.8', 'D12.9', 'D13.3', 'D37.2', 'D37.3', 'D37.4', 'D37.5', 'K51.4', 'K62.0', 'K62.1', 'K62.2', 'K62.3']
+
+  # Benign Nodular Goiter
+  BenNodGoit:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E01.1', 'E04.1', 'E04.2', 'E04.8', 'E04.9']
+
+  # Bladder Cancer
+  BladCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z80.52', 'Z85.51', 'C67', 'C67.0', 'C67.1', 'C67.2', 'C67.3', 'C67.4', 'C67.5', 'C67.6', 'C67.7', 'C67.8', 'C67.9', 'Z12.6']
+
+  # Brain and CNS Cancer
+  BrainCNSCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z86.011', 'C70', 'C70.0', 'C70.1', 'C70.9', 'C71', 'C71.0', 'C71.1', 'C71.2', 'C71.3', 'C71.4', 'C71.5', 'C71.6', 'C71.7', 'C71.8', 'C71.9', 'C72', 'C72.0', 'C72.1', 'C72.2', 'C72.3', 'C72.4', 'C72.5', 'C72.8', 'C72.9']
+
+  # Breast Cancer
+  BreastCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C50']
+
+  # Brugada Syndrome
+  BrugSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I49.8']
+
+  # Bulimia Nervosa
+  BuliNer:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F50.2', 'F50.3', 'F50.4', 'F50.5']
+
+  # Bullous Pemphigoid
+  BullPemph:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['L12.0']
+
+  # Cardiogenic Shock
+  CarShock:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['R57.0']
+
+  # Hypertrophic Cardiomyopathy
+  HCM:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I42.1', 'I42.1']
+        control_exclude: ['A39.5', 'B33.2', 'B37.6', 'I01.0', 'I01.1', 'I01.2', 'I08.8', 'I08.9', 'I09.0', 'I09.2', 'I30', 'I30.0', 'I30.1', 'I30.8', 'I30.9', 'I31', 'I31.0', 'I31.1', 'I31.2', 'I31.3', 'I31.8', 'I31.9', 'I32', 'I32.0', 'I32.1', 'I32.8', 'I33', 'I33.0', 'I33.9', 'I38', 'I40', 'I40.0', 'I40.1', 'I40.8', 'I40.9', 'I41', 'I41.2', 'I41.8', 'I42', 'I42.0', 'I42.2', 'I42.3', 'I42.4', 'I42.5', 'I42.6', 'I42.7', 'I42.8', 'I42.9', 'I43', 'I43.8', 'I51.4', 'I42.6', 'I51.81', 'B33.20', 'A39.5', 'A39.50', 'I42', 'I30.8', 'I30.1', 'I30.9', 'M32.12', 'I32', 'I30', 'I30.0', 'I01.0', 'I43', 'I42.7', 'I42.9', 'I42.0', 'I42.8', 'I42.5', 'I42.4', 'I42.3', 'I42.2', 'I09.0', 'B58.81', 'A36.81', 'I01.2', 'B33.22', 'I40.1', 'A39.52', 'I40.9', 'I40', 'I51.4', 'I40.8', 'I40.0', 'I41', 'M05.3', 'I01.1', 'A39.51', 'I38', 'B33.21', 'I33.9', 'B37.6', 'I33.0', 'I33', 'A39.53', 'B33.23', 'I31', 'I31.4', 'I31.9', 'I31.3', 'I31.0', 'I31.1', 'I09.2', 'I31.8', 'I31.2']
+
+  # Central Retinal Vein Occlusion
+  CRVO:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['H34.8']
+
+  # Cervical Cancer
+  CervCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z85.41', 'C53', 'C53.0', 'C53.1', 'C53.8', 'C53.9', 'D06', 'D06.0', 'D06.1', 'D06.7', 'D06.9']
+
+  # Chronic Myeloid Leukemia
+  CML:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C92.1', 'C92.2']
+
+  # Chronic Obstructive Pulmonary Disease
+  COPD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['J41', 'J41.0', 'J41.1', 'J41.8', 'J42', 'J43', 'J43.0', 'J43.1', 'J43.2', 'J43.8', 'J43.9', 'J44', 'J44.0', 'J44.1', 'J44.8', 'J44.9', 'J47', 'J44.1', 'J44', 'J44.0', 'J47.1', 'J47.9', 'J47.0', 'J47', 'J43.2', 'J43.0', 'J43.1', 'J43.8', 'J43.9', 'J43', 'J41.8', 'J42', 'J41.1', 'J41.0', 'J41', 'J44.9']
+        control_exclude: ['J40', 'J45', 'J45.0', 'J45.1', 'J45.8', 'J45.9', 'J46', 'J45.31', 'J45.901', 'J45.42', 'J45.41', 'J45.51', 'J45.990', 'J45.902', 'J45.21', 'J45.52', 'J45.32', 'J45.22', 'J40', 'J45.909', 'J45.998', 'J45.40', 'J45.20', 'J45', 'J45.991', 'J45.90', 'J45.30', 'J45.50', 'J98.01']
+
+  # Chronic Renal Failure / Chronic Kidney Disease (CKD)
+  CRF:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N18']
+
+  # Coffin-Siris Syndrome
+  CoffSirSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Q87.1']
+
+  # Colorectal Cancer
+  ColonRectCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C20', 'Z86.010', 'C18', 'C18.0', 'C18.1', 'C18.2', 'C18.3', 'C18.4', 'C18.5', 'C18.6', 'C18.7', 'C18.8', 'C18.9', 'C19', 'C21', 'C21.0', 'C21.1', 'C21.2', 'C21.8', 'Z12.1']
+
+  # Coronary Artery Disease (MI-based; I21-I25)
+  CAD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I21.0', 'I21.1', 'I21.2', 'I21.3', 'I21.4', 'I21.9', 'I22.0', 'I22.1', 'I22.2', 'I22.8', 'I22.9', 'I23.0', 'I23.1', 'I23.2', 'I23.3', 'I23.4', 'I23.5', 'I23.6', 'I23.7', 'I23.8', 'I24.1', 'I25.2']
+
+  # Charcot-Marie-Tooth Disease / Hereditary Motor and Sensory Neuropathy (G60.0)
+  CCANS:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['G60.0']
+
+  # Eating Disorders (broad; includes AN, BN, ARFID, other)
+  EatDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F50', 'F50.0', 'F50.1', 'F50.2', 'F50.3', 'F50.4', 'F50.5', 'F50.8', 'F50.9']
+
+  # Infective Endocarditis
+  Endocar:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['B33.21', 'I33', 'I33.0', 'I33.9', 'I38', 'I39', 'I39.0', 'I39.1', 'I39.2', 'I39.3', 'I39.4', 'I39.8']
+
+  # Endometriosis (excluding adenomyosis N80.0)
+  Endometr:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N80.1', 'N80.2', 'N80.3', 'N80.4', 'N80.5', 'N80.6', 'N80.8', 'N80.9']
+        control_exclude: ['N80.0']
+
+  # Esophageal Cancer
+  EsophCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z85.01', 'C15', 'C15.0', 'C15.1', 'C15.2', 'C15.3', 'C15.4', 'C15.5', 'C15.8', 'C15.9']
+
+  # Essential (Hemorrhagic) Thrombocythemia
+  EssThrom:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D47.3']
+
+  # Excessive and Frequent Regular Menstrual Bleeding (N92)
+  EFRMB:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N92']
+
+  # Familial / Small-cell CLL subtype (C91.1; overlaps BCLL — verify intent)
+  FSP:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C91.1']
+
+  # Female Infertility (all types)
+  FemInf:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N97', 'N97.0', 'N97.1', 'N97.2', 'N97.3', 'N97.4', 'N97.8', 'N97.9']
+
+  # Female Infertility with Anatomical Cause (tubal, uterine, cervical)
+  FemInfAC:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N97.1', 'N97.2', 'N97.3']
+
+  # Follicular Lymphoma
+  FolLymph:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C82.1', 'C82.2', 'C82.3', 'C82.4', 'C82.5', 'C82.6', 'C82.7', 'C82.9', 'C82.0']
+
+  # Graves' Disease (toxic diffuse goiter; E05.0x)
+  GravesDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E05.0', 'E05.00', 'E05.01']
+
+  # Hereditary Hemochromatosis
+  HemoChromo:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E83.1']
+
+  # Heart Failure
+  HF:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I50', 'I50.1', 'I50.9', 'I50.82', 'I50.81', 'I50.8', 'I50.84', 'I50.810', 'I50.812', 'I50.83', 'I50.89', 'I50.814', 'I50', 'I50.811', 'I50.1', 'I50.813']
+        control_exclude: ['I50.0', 'I97.0', 'R09.8', 'R94.3', 'T86.3', 'Z94.1', 'Z94.3', 'R09.89', 'R00', 'I50.9', 'I09.81', 'I97.79', 'I97.110', 'I97.191', 'I97.71', 'I97.130', 'I97.111', 'I97.131', 'I97.791', 'I97.89', 'I97.190', 'I97.121', 'I97.88', 'I97.120', 'I97.790', 'I97.711', 'I97.710', 'I97.7', 'R94.30', 'R94.39', 'R94.3', 'I50.3', 'I50.30', 'I50.31', 'I50.33', 'I50.32', 'I25.812', 'I97.0', 'I25.769', 'I25.760', 'Z95.818', 'T86.23', 'T86.39', 'Z94.3', 'I25.761', 'I25.811', 'T86.2', 'I25.750', 'T86.3', 'T86.32', 'T86.20', 'T86.30', 'T86.22', 'T86.298', 'Z94.1', 'T86.31', 'I25.768', 'I25.758', 'Z95.812', 'Z95.811', 'T86.21', 'T86.29', 'I25.751', 'T86.33', 'T86.290', 'I25.759', 'I50.20', 'I50.40', 'I50.41', 'I50.23', 'I50.42', 'I50.21', 'I50.22', 'I50.4', 'I50.43', 'I50.2']
+
+  # Hepatic Carcinoma (primary liver cancer; excludes bile duct C22.1)
+  HepCarcin:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C22.0', 'C22.2', 'C22.7', 'C22.8', 'C22.9']
+        control_exclude: ['C22.1', 'C24', 'C24.0', 'C24.1', 'C24.8', 'C24.9']
+
+  # Hypertension (essential)
+  HTN:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I10']
+
+  # Hypertensive Heart Disease
+  HHD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I11.9', 'I11', 'I11.0']
+
+  # Hypothyroidism — acquired (E03.8/9); excludes congenital (E03.2/3) and post-procedural (E89.0)
+  HypoThyr:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E03.8', 'E03.9']
+        control_exclude: ['E03.2', 'E03.3', 'E89.0']
+
+  # Idiopathic Pulmonary Fibrosis / ILD
+  IPF:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['J84.1', 'J84.8', 'J84.89', 'J84.17', 'J84.1', 'J84.10']
+        control_exclude: ['B22.1', 'J18.2', 'J60', 'J61', 'J62', 'J62.0', 'J62.8', 'J63', 'J63.0', 'J63.1', 'J63.2', 'J63.3', 'J63.4', 'J63.5', 'J63.8', 'J64', 'J65', 'J66', 'J66.0', 'J66.1', 'J66.2', 'J66.8', 'J67', 'J67.0', 'J67.1', 'J67.2', 'J67.3', 'J67.4', 'J67.5', 'J67.6', 'J67.7', 'J67.8', 'J67.9', 'J68', 'J68.0', 'J68.1', 'J68.2', 'J68.3', 'J68.4', 'J68.8', 'J68.9', 'J69.0', 'J69.1', 'J69.8', 'J70', 'J70.0', 'J70.1', 'J70.2', 'J70.3', 'J70.4', 'J70.8', 'J70.9', 'J80', 'J81', 'J82', 'J84.0', 'J84.9', 'J86', 'J86.0', 'J86.9', 'J90', 'J91', 'J92', 'J92.0', 'J92.9', 'J93', 'J93.0', 'J93.1', 'J93.8', 'J93.9', 'J94', 'J94.0', 'J94.1', 'J94.2', 'J94.8', 'J94.9', 'J95.1', 'J95.2', 'J95.3', 'J96.0', 'J96.1', 'J96.9', 'J98.1', 'J98.2', 'J98.3', 'R09.1', 'R09.2', 'Z99.1', 'Z99.1', 'Z99.11', 'Z99.12', 'Z99.81', 'J95.850', 'J86', 'J93.12', 'J86.0', 'J93.1', 'J93.81', 'J86.9', 'J95.81', 'J93.11', 'J93.82', 'J93.8', 'J95.812', 'J95.811', 'J93.83', 'J93.0', 'J93', 'J93.9', 'J69.0', 'J81.1', 'J18.2', 'J95.3', 'J95.822', 'J95.2', 'J95.821', 'J95.82', 'J95.1', 'J81.0', 'J82', 'D57.811', 'D57.211', 'D57.411', 'D57.01', 'J98.2', 'J98.1', 'J98.11', 'J98.3', 'J98.19', 'R09.1', 'J91.8', 'J92', 'J94.8', 'J94', 'J92.0', 'J94.2', 'J94.9', 'J94.0', 'J90', 'J94.1', 'J92.9', 'J96.9', 'R06.03', 'J80', 'J70.0', 'J68.3', 'J70.4', 'J69.1', 'J68.8', 'J70.2', 'J68.0', 'J70.5', 'J68.9', 'J68.4', 'J69.8', 'J70.3', 'J70.8', 'J68', 'J70.1', 'J68.1', 'J70', 'J68.2', 'J70.9', 'J84.2', 'J84.116', 'J84.11', 'J84.117', 'J84.112', 'J84.114', 'J84.113', 'J84.111', 'J84.115', 'J96.12', 'J96.00', 'J96.20', 'J96.90', 'J96.01', 'J96.10', 'J96.22', 'J96.2', 'J96.02', 'J96.1', 'J96.91', 'J96.92', 'J96.11', 'J96.21', 'J96.0', 'R09.2', 'J66.2', 'J66.0', 'J67.9', 'J66.1', 'J67.8', 'J66', 'J67.6', 'J67', 'J67.5', 'J67.7', 'J67.1', 'J67.4', 'J67.3', 'J67.2', 'J67.0', 'J66.8', 'J63.6', 'J64', 'J61', 'J63.4', 'J60', 'J62.8', 'J63', 'J63.0', 'J63.1', 'J62', 'J63.5', 'J62.0', 'J63.3', 'J65', 'J63.2', 'J84.8', 'J84.81', 'J84.09', 'J84.841', 'J84.02', 'J84.82', 'J84.83', 'J84.843', 'J84.0', 'J84.848', 'J84.01', 'J84.03', 'J84.9', 'J84.842']
+
+  # Immune Thrombocytopenic Purpura
+  ITP:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D69.3']
+
+  # Inflammatory Bowel Disease (Crohn + UC + unspecified)
+  IBD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K50', 'K50.0', 'K50.1', 'K50.8', 'K50.9', 'K51', 'K51.0', 'K51.1', 'K51.2', 'K51.3', 'K51.5', 'K51.8', 'K51.9', 'K52', 'K52.8', 'K52.9']
+
+  # Inguinal, Femoral, Umbilical and Abdominal Wall Hernia
+  IFHern:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K40', 'K40.0', 'K40.1', 'K40.2', 'K40.3', 'K40.4', 'K40.9', 'K41', 'K41.0', 'K41.1', 'K41.2', 'K41.3', 'K41.4', 'K41.9', 'K42', 'K42.0', 'K42.1', 'K42.9', 'K44', 'K44.0', 'K44.1', 'K44.9', 'K45', 'K45.0', 'K45.1', 'K45.8', 'K46', 'K46.0', 'K46.1', 'K46.9']
+
+  # Interstitial Lung Disease associated with Sarcoidosis
+  ILDSarc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D86.9', 'D86', 'D86.0', 'D86.1', 'D86.2', 'J84', 'J84.0', 'J84.1', 'J84.8', 'J84.9']
+
+  # Iodine Deficiency Disorders (cretinism, endemic goiter)
+  IodDef:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E00', 'E00.0', 'E00.1', 'E00.2', 'E00.9', 'E01', 'E01.0', 'E01.1', 'E01.2', 'E01.8', 'E02']
+
+  # Kabuki Syndrome
+  KabSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Q87.0']
+
+  # Kidney Cancer (renal cell carcinoma)
+  KidCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z80.51', 'C64', 'C65']
+
+  # Kleefstra Syndrome
+  KleefSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Q87.8']
+
+  # Laryngeal Cancer
+  LaryxCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z85.21', 'C32', 'C32.0', 'C32.1', 'C32.2', 'C32.3', 'C32.8', 'C32.9']
+
+  # Leukemia — all types (C91-C95)
+  Leuk:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z80.6', 'Z85.6', 'C91', 'C91.0', 'C91.1', 'C91.2', 'C91.3', 'C91.4', 'C91.5', 'C91.6', 'C91.7', 'C91.8', 'C91.9', 'C92', 'C92.0', 'C92.1', 'C92.2', 'C92.3', 'C92.4', 'C92.5', 'C92.6', 'C92.7', 'C92.8', 'C92.9', 'C93', 'C93.0', 'C93.1', 'C93.2', 'C93.3', 'C93.7', 'C93.9', 'C94', 'C94.0', 'C94.1', 'C94.2', 'C94.3', 'C94.4', 'C94.5', 'C94.6', 'C94.7', 'C95', 'C95.0', 'C95.1', 'C95.2', 'C95.7', 'C95.9']
+
+  # Liver Cancer (all histologies)
+  LiverCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z85.05', 'C22', 'C22.0', 'C22.1', 'C22.2', 'C22.3', 'C22.4', 'C22.7', 'C22.9']
+
+  # Liver Fibrosis and Cirrhosis (K74* — bare code prefix matches all subcodes)
+  LiverFibCirr:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K74*']
+
+  # Long QT Syndrome
+  LongQTSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I45.81']
+
+  # Lymphocytic (Hashimoto) Thyroiditis
+  LymphThyrit:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E06.3']
+
+  # Male Infertility
+  MalInf:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N46']
+
+  # Maternal Hemorrhage (antepartum + postpartum)
+  MatHem:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['O62.2', 'O20', 'O20.0', 'O20.8', 'O20.9', 'O43.2', 'O44', 'O44.0', 'O44.1', 'O45', 'O45.0', 'O45.8', 'O45.9', 'O46', 'O46.0', 'O46.8', 'O46.9', 'O67', 'O67.0', 'O67.8', 'O67.9', 'O72', 'O72.0', 'O72.1', 'O72.2', 'O72.3']
+
+  # Maternal Hypertensive Disorders (gestational HTN, preeclampsia, eclampsia)
+  MatHypDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['O10', 'O10.0', 'O10.1', 'O10.2', 'O10.3', 'O10.4', 'O10.9', 'O11', 'O12', 'O12.0', 'O12.1', 'O12.2', 'O13', 'O14', 'O14.0', 'O14.1', 'O14.2', 'O14.9', 'O15', 'O15.0', 'O15.1', 'O15.2', 'O15.9', 'O16']
+
+  # Maturity-Onset Diabetes of the Young (MODY; E13.9)
+  MODYDiab:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E13.9']
+
+  # Multiple Myeloma and Plasma Cell Disorders
+  MultiMyel:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C88', 'C88.0', 'C88.1', 'C88.2', 'C88.3', 'C88.4', 'C88.7', 'C88.9', 'C90', 'C90.0', 'C90.1', 'C90.2', 'C90.3']
+
+  # Multiple Sclerosis
+  MS:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['G35']
+
+  # Myalgic Encephalomyelitis / Chronic Fatigue Syndrome (ME/CFS; G93.3)
+  MECS:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['G93.3']
+
+  # Myocarditis
+  Myocard:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D86.85', 'B33.2', 'I40', 'I40.0', 'I40.1', 'I40.8', 'I40.9', 'I41', 'I41.0', 'I41.1', 'I41.2', 'I41.8', 'I51.4', 'I51.5', 'I51.6']
+
+  # Narcolepsy Type 1 (with cataplexy)
+  Narco1:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['G47.4']
+
+  # Non-Functioning Pituitary Adenoma
+  NonFuncPitAd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D35.2']
+
+  # Non-Hodgkin Lymphoma (C82-C86, C96)
+  NHL:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C82', 'C82.0', 'C82.1', 'C82.2', 'C82.3', 'C82.4', 'C82.5', 'C82.6', 'C82.7', 'C82.9', 'C83', 'C83.0', 'C83.1', 'C83.2', 'C83.3', 'C83.4', 'C83.5', 'C83.6', 'C83.7', 'C83.8', 'C83.9', 'C84', 'C84.0', 'C84.1', 'C84.2', 'C84.3', 'C84.4', 'C84.5', 'C84.6', 'C84.7', 'C84.8', 'C84.9', 'C85', 'C85.0', 'C85.1', 'C85.2', 'C85.7', 'C85.9', 'C86', 'C86.0', 'C86.1', 'C86.2', 'C86.3', 'C86.4', 'C86.5', 'C86.6', 'C96', 'C96.0', 'C96.1', 'C96.2', 'C96.3', 'C96.4', 'C96.5', 'C96.6', 'C96.7', 'C96.8', 'C96.9']
+
+  # Non-Papillary Transitional Cell Carcinoma of Bladder
+  NonPapTCCBlad:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C67.2', 'C67.3', 'C67.4', 'C67.5', 'C67.6', 'C67.7', 'C67.8', 'C67.9', 'C67.1', 'C67.0']
+
+  # Non-Rheumatic Valvular Heart Disease (mitral, aortic, tricuspid, pulmonary)
+  NonRheuValv:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I34', 'I34.0', 'I34.1', 'I34.2', 'I34.8', 'I34.9', 'I35', 'I35.0', 'I35.1', 'I35.2', 'I35.8', 'I35.9', 'I36', 'I36.0', 'I36.1', 'I36.2', 'I36.8', 'I36.9', 'I37', 'I37.0', 'I37.1', 'I37.2', 'I37.8', 'I37.9']
+
+  # Opioid Use Disorder
+  OUD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F11.10', 'F11.11', 'F11.120', 'F11.121', 'F11.122', 'F11.129', 'F11.14', 'F11.150', 'F11.151', 'F11.159', 'F11.181', 'F11.182', 'F11.188', 'F11.19', 'F11.20', 'F11.21', 'F11.220', 'F11.221', 'F11.222', 'F11.229', 'F11.23', 'F11.24', 'F11.250', 'F11.251', 'F11.259', 'F11.281', 'F11.282', 'F11.288', 'F11.29']
+
+  # Osteochondritis Dissecans (M93.2 — NOT obsessive-compulsive disorder)
+  OCD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['M93.2']
+
+  # Ovarian Cancer
+  OvCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C56.9', 'Z80.41', 'Z85.43', 'C56']
+
+  # Pancreatitis (acute and chronic) and Pancreatic Disease
+  Pancreat:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K85', 'K85.0', 'K85.1', 'K85.2', 'K85.3', 'K85.8', 'K85.9', 'K86', 'K86.0', 'K86.1', 'K86.2', 'K86.3', 'K86.8', 'K86.9']
+
+  # Parkinson's Disease
+  ParkDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['F02.3', 'G20']
+
+  # Peptic Ulcer Disease (gastric, duodenal, peptic, gastrojejunal)
+  PeptUlcer:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['K25', 'K25.0', 'K25.1', 'K25.2', 'K25.3', 'K25.4', 'K25.5', 'K25.6', 'K25.7', 'K25.9', 'K26', 'K26.0', 'K26.1', 'K26.2', 'K26.3', 'K26.4', 'K26.5', 'K26.6', 'K26.7', 'K26.9', 'K27', 'K27.0', 'K27.1', 'K27.2', 'K27.3', 'K27.4', 'K27.5', 'K27.6', 'K27.7', 'K27.9', 'K28', 'K28.0', 'K28.1', 'K28.2', 'K28.3', 'K28.4', 'K28.5', 'K28.6', 'K28.7', 'K28.9']
+
+  # Peripheral Arterial Disease
+  PAD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I70.0**', 'I70.2**', 'I70.3**', 'I70.4**', 'I70.5**', 'I70.6**', 'I70.7**', 'I70.9**', 'I73.9**']
+
+  # Placental Insufficiency (O36.5)
+  PlacInsuf:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['O36.5']
+
+  # Polycystic Ovary Syndrome
+  PCOS:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['E28.2']
+
+  # Polycythemia Vera
+  PolycythVera:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D45']
+
+  # Preeclampsia
+  Preeclamps:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['O14.2', 'O14.9', 'O14.0', 'O14.1']
+
+  # Pregnancy Loss (note: O002.1 likely typo for O02.1; 629.9 is ICD-9)
+  PregLoss:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['O002.1', 'O31.10X0', 'N96', 'O26.20', '629.9', 'O26.21', 'O26.22', 'O26.23', 'Z31.441']
+        control_exclude: ['O35.9XX0', 'Q95.0', 'Q95.1', 'Q95.8', 'Q95.9']
+
+  # Primary Open-Angle Glaucoma
+  POAG:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['H40.1', 'H40.1132', 'H40.1123', 'H40.1133', 'H40.119', 'H40.11', 'H40.1130', 'H40.1193', 'H40.1131', 'H40.1110', 'H40.1112', 'H40.1121', 'H40.1192', 'H40.1134', 'H40.1111', 'H40.1190', 'H40.112', 'H40.111', 'H40.113', 'H40.1191', 'H40.1113', 'H40.1120', 'H40.1194', 'H40.1114', 'H40.1124', 'H40.1122']
+        control_exclude: ['G45.3', 'H17', 'H17.0', 'H17.1', 'H17.8', 'H17.9', 'H18', 'H18.0', 'H18.1', 'H18.2', 'H18.3', 'H18.4', 'H18.5', 'H18.6', 'H18.7', 'H18.8', 'H18.9', 'H19.2', 'H31', 'H31.0', 'H31.1', 'H31.2', 'H31.3', 'H31.4', 'H31.8', 'H31.9', 'H32', 'H32.0', 'H32.8', 'H33', 'H33.0', 'H33.1', 'H33.2', 'H33.3', 'H33.4', 'H33.5', 'H34', 'H34.0', 'H34.1', 'H34.2', 'H34.8', 'H34.9', 'H35', 'H35.0', 'H35.1', 'H35.2', 'H35.3', 'H35.4', 'H35.5', 'H35.6', 'H35.7', 'H35.8', 'H35.9', 'H36', 'H40', 'H40.0', 'H40.2', 'H40.3', 'H40.4', 'H40.5', 'H40.6', 'H40.8', 'H40.9', 'H42', 'H42.0', 'H42.8', 'H44', 'H44.2', 'H44.3', 'H44.4', 'H44.5', 'H44.8', 'H44.9', 'Z94.7', 'H40.1290', 'H40.133', 'H40.10X4', 'H40.10X2', 'H40.15', 'H40.023', 'H40.1223', 'H40.1391', 'H40.131', 'H40.1333', 'H40.1324', 'H40.012', 'H40.021', 'H40.1334', 'H40.10', 'H40.129', 'H40.1', 'H40.1212', 'H40.122', 'H40.1224', 'H40.10X3', 'H40.1234', 'H40.12', 'H40.029', 'H40.1231', 'H40.1312', 'H40.1232', 'H40.123', 'H40.1321', 'H40.1230', 'H40.10X0', 'H40.019', 'H40.1393', 'H40.1392', 'H40.1214', 'H40.139', 'H40.1213', 'H40.1394', 'H40.1221', 'H40.022', 'H40.1331', 'H40.132', 'H40.1390', 'H40.1291', 'H40.1314', 'H40.1322', 'H40.01', 'H40.1211', 'H40.011', 'H40.1313', 'H40.1323', 'H40.1293', 'H40.013', 'H40.1220', 'H40.1310', 'H40.1233', 'H40.152', 'H40.1311', 'H40.1320', 'H40.1292', 'H40.1332', 'H40.1210', 'H40.121', 'H40.153', 'H40.1294', 'H40.02', 'H40.151', 'H40.10X1', 'H40.1222', 'H40.1330', 'H40.13', 'H40.159', 'H35.371', 'H35.37', 'H35.379', 'H35.373', 'H35.372', 'Z94.7', 'H40.1421', 'H40.1493', 'H40.1424', 'H40.1423', 'H40.1420', 'H40.1413', 'H40.14', 'H40.1491', 'H40.143', 'H40.1410', 'H40.1412', 'H40.149', 'H40.1431', 'H40.1432', 'H40.1494', 'H40.1490', 'H40.1414', 'H40.1433', 'H40.1434', 'H40.1492', 'H40.1411', 'H40.1422', 'H40.1430', 'H40.141', 'H40.142', 'H44.2E9', 'H44.2B3', 'H44.2B1', 'H44.2C9', 'H44.2B9', 'H44.2D1', 'H44.2E', 'H44.2C1', 'H44.2', 'H44.2E1', 'H44.2C2', 'H44.2D', 'H44.21', 'H44.2A3', 'H44.2D3', 'H44.2A9', 'H44.2E2', 'H44.23', 'H44.2C3', 'H44.20', 'H44.2A', 'H44.2A1', 'H44.2E3', 'H44.22', 'H44.2C', 'H44.2D9', 'H44.2B2', 'H44.2B', 'H44.2D2', 'H44.2A2', 'H40.30X1', 'H40.32X0', 'H40.53X2', 'H40.31', 'H40.52X0', 'H40.63', 'H40.42X0', 'H40.33', 'H40.051', 'H40.832', 'H40.40X2', 'H40.9', 'H40.33X0', 'H40.041', 'H40.813', 'H40.829', 'H40.063', 'H40.41X3', 'H40.60X0', 'H40.53X0', 'H40.60X4', 'H40.42X3', 'H40.51X0', 'H40.31X2', 'H40.062', 'H40.40X4', 'H40.32', 'H40.43X0', 'H40.31X1', 'H40.002', 'H40.52', 'H40.60', 'H40.82', 'H40.30X4', 'H40.049', 'H40.31X3', 'H40.42', 'H40.009', 'H40.60X1', 'H40.53X1', 'H40.812', 'H40.33X4', 'H40.50X3', 'H40.059', 'H40.30X3', 'H40.61X1', 'H40.31X4', 'H40.6', 'H40.52X3', 'H40.61', 'H40.831', 'H40.821', 'H40.52X4', 'H40.62', 'H40.50', 'H40.40X3', 'H40.50X0', 'H40.61X4', 'H40.32X3', 'H40.811', 'H40.833', 'H40.43X3', 'H40.42X2', 'H40.63X0', 'H40.41X2', 'H40.30', 'H40.40', 'H40.41X1', 'H40.32X2', 'H40.33X2', 'H40.06', 'H40.61X2', 'H40.53X3', 'H40.43X4', 'H40.822', 'H40.89', 'H40.8', 'H40.33X1', 'H40.00', 'H40.53', 'H40.62X4', 'H40.0', 'H40.50X4', 'H40.51', 'H40.50X1', 'H40.001', 'H40.003', 'H40.41X0', 'H40.60X3', 'H40.839', 'H40.51X2', 'H40.4', 'H40.63X1', 'H40.43X2', 'H40.62X1', 'H40.61X0', 'H40.60X2', 'H40.33X3', 'H40.63X4', 'H40.52X1', 'H40.63X3', 'H40', 'H40.51X4', 'H40.053', 'H40.51X3', 'H40.42X1', 'H40.81', 'H40.51X1', 'H40.40X0', 'H40.62X0', 'H40.83', 'H40.04', 'H40.5', 'H40.30X2', 'H40.62X2', 'H40.061', 'H40.50X2', 'H40.823', 'H40.042', 'H40.3', 'H40.63X2', 'H40.069', 'H40.05', 'H40.32X1', 'H40.30X0', 'H40.53X4', 'H40.41X4', 'H40.41', 'H40.052', 'H40.42X4', 'H42', 'H40.043', 'H40.43X1', 'H40.43', 'H40.40X1', 'H40.61X3', 'H40.31X0', 'H40.52X2', 'H40.32X4', 'H40.819', 'H40.62X3', 'H35.38', 'H35.382', 'H35.389', 'H35.381', 'H35.383', 'H18.51', 'H35.00', 'H35.20', 'H35.033', 'H35.029', 'H35.21', 'H35.021', 'H35.031', 'H35.022', 'H35.02', 'H35.039', 'H35.032', 'H35.2', 'H35.03', 'H35.23', 'H35.22', 'H35.07', 'H35.023', 'H31', 'H31.42', 'H31.312', 'H31.32', 'H31.402', 'H31.41', 'H31.329', 'H31.422', 'H31.313', 'H31.8', 'H31.9', 'H31.322', 'H31.40', 'H31.411', 'H31.429', 'H31.31', 'H31.401', 'H31.419', 'H31.309', 'H31.413', 'H31.409', 'H31.302', 'H31.403', 'H31.423', 'H31.421', 'H31.311', 'H31.319', 'H31.321', 'H31.4', 'H31.3', 'H31.412', 'H32', 'H31.323', 'H31.303', 'H31.301', 'H31.30', 'H35.30', 'H35.3', 'H31.093', 'H31.00', 'H31.092', 'H31.009', 'H31.001', 'H31.022', 'H31.02', 'H31.002', 'H31.011', 'H31.029', 'H31.019', 'H31.003', 'H31.0', 'H31.099', 'H31.013', 'H31.01', 'H31.012', 'H31.09', 'H31.023', 'H31.091', 'H31.021', 'H33.101', 'H33.109', 'H33.191', 'H33.111', 'H33.112', 'H33.119', 'H33.102', 'H33.113', 'H33.192', 'H33.19', 'H33.193', 'H33.103', 'H33.10', 'H33.11', 'H33.1', 'H33.199', 'H44.3', 'H44.52', 'H44.81', 'H44.811', 'H44.322', 'H44.829', 'H44.523', 'H44.522', 'H02.734', 'H02.73', 'H44.82', 'H44.311', 'H44.533', 'H44.813', 'H02.732', 'H44.819', 'H44.823', 'H02.733', 'H44.399', 'H44.822', 'H44.532', 'H02.739', 'H02.735', 'H44.321', 'H44.821', 'H44.812', 'H44.9', 'H44.32', 'H44.53', 'H44.5', 'H44.393', 'H44.392', 'H02.736', 'H44.521', 'H44.8', 'H02.731', 'H44.313', 'H44.31', 'H44.89', 'H44.50', 'H44.531', 'H44.529', 'H44.39', 'H44.391', 'H44.539', 'H44.323', 'H44.312', 'H44.30', 'H44.319', 'H44.329', 'H35.16', 'H35.101', 'H35.129', 'H35.13', 'H35.109', 'H35.153', 'H35.179', 'H35.151', 'H35.133', 'H35.119', 'H35.139', 'H35.163', 'H35.152', 'H35.121', 'H35.159', 'H35.161', 'H35.169', 'H35.103', 'H35.142', 'H35.162', 'H35.113', 'H35.1', 'H35.172', 'H35.141', 'H35.14', 'H35.143', 'H35.102', 'H35.123', 'H35.15', 'H35.131', 'H35.111', 'H35.173', 'H35.12', 'H35.112', 'H35.11', 'H35.17', 'H35.122', 'H35.171', 'H35.132', 'H35.149', 'H35.10', 'H35.70', 'H35.729', 'H35.713', 'H35.719', 'H35.7', 'H35.72', 'H35.739', 'H33.2', 'H35.711', 'H35.71', 'H35.732', 'H35.712', 'H35.731', 'H35.733', 'H35.722', 'H35.723', 'H35.721', 'H35.73', 'H33.40', 'H33.302', 'H33.309', 'H33.43', 'H33.30', 'H33.32', 'H33.8', 'H33.4', 'H33.339', 'H33.3', 'H33.319', 'H33.31', 'H33.312', 'H33.23', 'H33.322', 'H33.41', 'H33.22', 'H33.333', 'H33.313', 'H33.311', 'H33.332', 'H33.331', 'H33.323', 'H33.303', 'H33.301', 'H33.321', 'H33.21', 'H33.42', 'H33.329', 'H33.33', 'H33.20', 'H35.45', 'H35.44', 'H35.429', 'H35.449', 'H35.451', 'H35.413', 'H35.452', 'H35.463', 'H35.46', 'H35.443', 'H35.412', 'H35.40', 'H35.421', 'H35.433', 'H35.461', 'H35.469', 'H35.42', 'H35.441', 'H35.459', 'H35.453', 'H35.432', 'H35.423', 'H35.43', 'H35.422', 'H35.411', 'H35.4', 'H35.41', 'H35.462', 'H35.419', 'H35.439', 'H35.442', 'H35.431', 'H35.62', 'H35.61', 'H35.6', 'H35.60', 'H35.82', 'H35.63', 'H18.429', 'H18.83', 'H18.45', 'H18.4', 'H18.441', 'H18.421', 'H18.463', 'H18.46', 'H18.44', 'H18.462', 'H18.42', 'H18.411', 'H18.49', 'H18.452', 'H18.419', 'H18.423', 'H18.459', 'H18.412', 'H18.41', 'H18.413', 'H18.43', 'H18.469', 'H18.422', 'H18.832', 'H18.461', 'H18.449', 'H18.831', 'H18.839', 'H18.40', 'H18.451', 'H18.453', 'H18.442', 'H18.833', 'H18.443', 'H18.23', 'H18.231', 'H18.229', 'H18.221', 'H18.233', 'H18.239', 'H18.223', 'H18.20', 'H18.222', 'H18.22', 'H18.1', 'H18.10', 'H18.232', 'H18.12', 'H18.13', 'H18.11', 'H31.11', 'H35.52', 'H35.50', 'H35.54', 'H35.5', 'H35.51', 'H35.53', 'H36', 'H35.362', 'H35.36', 'H35.363', 'H35.361', 'H35.369', 'H40.2230', 'H40.033', 'H40.2223', 'H40.2291', 'H40.229', 'H40.241', 'H40.03', 'H40.2232', 'H40.2220', 'H40.2222', 'H40.2212', 'H40.2224', 'H40.239', 'H40.23', 'H40.2231', 'H40.20X1', 'H40.219', 'H40.222', 'H40.233', 'H40.223', 'H40.031', 'H40.231', 'H40.21', 'H40.2214', 'H40.032', 'H40.20X3', 'H40.2294', 'H40.2210', 'H40.232', 'H40.2213', 'H40.2211', 'H40.249', 'H40.22', 'H40.20X4', 'H40.242', 'H40.243', 'H40.2290', 'H40.20X2', 'H40.2221', 'H40.2233', 'H40.2', 'H40.2293', 'H40.212', 'H40.20X0', 'H40.24', 'H40.20', 'H40.213', 'H40.221', 'H40.039', 'H40.2292', 'H40.211', 'H40.2234', 'H18.61', 'H18.62', 'H18.6', 'H18.603', 'H18.601', 'H18.611', 'H18.619', 'H18.613', 'H18.602', 'H18.609', 'H18.612', 'H18.623', 'H18.621', 'H18.60', 'H18.622', 'H18.629', 'H35.3222', 'H35.3213', 'H35.322', 'H35.3230', 'H35.3220', 'H35.323', 'H35.3211', 'H35.3232', 'H35.3233', 'H35.3212', 'H35.329', 'H35.3291', 'H35.321', 'H35.3293', 'H35.3221', 'H35.3290', 'H35.32', 'H35.3210', 'H35.3231', 'H35.3223', 'H35.3292', 'H18.732', 'H18.819', 'H18.723', 'H18.043', 'H18.069', 'H18.813', 'H18.71', 'H18.823', 'H18.791', 'H18.731', 'H18.821', 'H18.9', 'H18.899', 'H18.32', 'H18.33', 'H18.73', 'H18.039', 'H18.822', 'H18.05', 'H18.81', 'H18.30', 'H18.793', 'H18.022', 'H18.053', 'H18.009', 'H18.029', 'H18.711', 'H18.722', 'H18.03', 'H18.052', 'H18.003', 'H18.00', 'H18.332', 'H18.739', 'H18.313', 'H18.812', 'H18.012', 'H18.21', 'H18.891', 'H18.002', 'H18.02', 'H18.331', 'H18.792', 'H18.059', 'H18.712', 'H18.019', 'H18.049', 'H18.212', 'H18.893', 'H18.219', 'H18.0', 'H18.041', 'H18.322', 'H18.051', 'H18.79', 'H18.82', 'H18.031', 'H18.321', 'H18', 'H18.811', 'H18.323', 'H18.70', 'H18.729', 'H18.721', 'H18.062', 'H18.032', 'H18.892', 'H18.04', 'H18.211', 'H18.719', 'H18.213', 'H18.01', 'H18.001', 'H18.713', 'H18.329', 'H18.013', 'H18.3', 'H18.319', 'H18.333', 'H18.061', 'H18.042', 'H18.89', 'H18.06', 'H18.339', 'H18.011', 'H18.733', 'H18.829', 'H18.7', 'H18.021', 'H18.033', 'H18.311', 'H18.72', 'H18.312', 'H18.063', 'H18.799', 'H18.023', 'H18.31', 'H35.81', 'H18.53', 'H18.59', 'H18.50', 'H18.55', 'H18.5', 'H18.54', 'H18.52', 'H35.3192', 'H35.311', 'H35.3130', 'H35.3122', 'H35.3121', 'H35.3120', 'H35.3134', 'H35.3111', 'H35.3190', 'H35.31', 'H35.312', 'H35.3114', 'H35.3113', 'H35.3191', 'H35.3131', 'H35.3132', 'H35.313', 'H35.3112', 'H35.3193', 'H35.3133', 'H35.3194', 'H35.319', 'H35.3110', 'H35.3124', 'H35.3123', 'H17.9', 'H17.12', 'H17', 'H17.81', 'H17.823', 'H17.89', 'H17.813', 'H17.03', 'H17.829', 'H17.1', 'H17.811', 'H17.822', 'H17.8', 'H17.00', 'H17.82', 'H17.821', 'H17.13', 'H17.0', 'H17.01', 'H17.819', 'H17.11', 'H17.02', 'H17.10', 'H17.812', 'H33.051', 'H33.05', 'H33.029', 'H33.041', 'H33.053', 'H33.031', 'H33.01', 'H33.019', 'H33.033', 'H33.059', 'H33.03', 'H33.013', 'H33.012', 'H33.049', 'H33.003', 'H33.002', 'H33.042', 'H33.039', 'H33.043', 'H33.052', 'H33.023', 'H33.00', 'H33.011', 'H33.001', 'H33.02', 'H33.022', 'H33.0', 'H33.04', 'H33.009', 'H33.032', 'H33.021', 'H34.213', 'H34.822', 'H34.219', 'H35.041', 'H34.8312', 'H34.23', 'H34.8390', 'H35.05', 'H34.8110', 'H34.8132', 'H35.059', 'H34.839', 'H35.09', 'H34.211', 'H34.11', 'H35.061', 'H34.812', 'H34.8330', 'H34.231', 'H35.042', 'H35.013', 'H35.011', 'H35.012', 'H34.8131', 'H35.063', 'H34.02', 'G45.3', 'H34.212', 'H34.8311', 'H34.8331', 'H35.079', 'H34.8130', 'H34.2', 'H34.8122', 'H34.8332', 'H34.83', 'H35.04', 'H34.832', 'H35.072', 'H34.10', 'H34.811', 'H34.8322', 'H34.12', 'H34.8392', 'H34.8120', 'H35.01', 'H34.13', 'H34.8191', 'H35.043', 'H34.829', 'H34.233', 'H35.052', 'H34.819', 'H34.8321', 'H34.03', 'H34.8391', 'H35.073', 'H34.9', 'H34.82', 'H35.062', 'H34.823', 'H34.833', 'H34.239', 'H34.232', 'H34.8320', 'H34.8121', 'H34.821', 'H34.8111', 'H34.00', 'H34.0', 'H34.8190', 'H34.8310', 'H35.049', 'H35.051', 'H34.81', 'H34', 'H35.06', 'H34.831', 'H34.8', 'H34.813', 'H34.1', 'H35.053', 'H34.8192', 'H35.069', 'H34.21', 'H35.071', 'H34.8112', 'H34.01', 'H35.019', 'H44.441', 'H44.42', 'H44.432', 'H44.449', 'H44.433', 'H44.41', 'H44.423', 'H44.44', 'H44.431', 'H44.43', 'H44.443', 'H44.442', 'H44.411', 'H44.421', 'H44.511', 'H44.419', 'H44.4', 'H44.512', 'H44.429', 'H44.439', 'H44.413', 'H44.519', 'H44.422', 'H44.51', 'H44.412', 'H44.40', 'H44.513', 'H35.353', 'H35.351', 'H35.341', 'H35.359', 'H35.34', 'H35.349', 'H35.35', 'H35.342', 'H35.343', 'H35.352', 'H35', 'H35.9', 'H35.89', 'H31.23', 'H31.121', 'H31.1', 'H31.113', 'H31.29', 'H31.21', 'H31.20', 'H31.10', 'H31.102', 'H31.103', 'H31.12', 'H31.2', 'H31.123', 'H31.101', 'H31.119', 'H31.112', 'H31.111', 'H35.33', 'H31.129', 'H31.122', 'H31.22', 'H31.109']
+
+  # Primary Sjogren's Syndrome
+  PrimSjoSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['M35.0']
+
+  # Prolactinoma
+  Prolactinom:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D35.2', 'E22.1']
+
+  # Psoriasis and Psoriasiform Disorders
+  Psori:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['L40', 'L40.0', 'L40.1', 'L40.2', 'L40.3', 'L40.4', 'L40.5', 'L40.8', 'L40.9', 'L41', 'L41.0', 'L41.1', 'L41.2', 'L41.3', 'L41.4', 'L41.5', 'L41.8', 'L41.9']
+
+  # Rheumatic Heart Disease
+  RheumHeaDis:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I02.0', 'I01', 'I01.0', 'I01.1', 'I01.2', 'I01.8', 'I01.9', 'I05', 'I05.0', 'I05.1', 'I05.2', 'I05.8', 'I05.9', 'I06', 'I06.0', 'I06.1', 'I06.2', 'I06.8', 'I06.9', 'I07', 'I07.0', 'I07.1', 'I07.2', 'I07.8', 'I07.9', 'I08', 'I08.0', 'I08.1', 'I08.2', 'I08.3', 'I08.8', 'I08.9', 'I09', 'I09.0', 'I09.1', 'I09.2', 'I09.8', 'I09.9']
+
+  # Rheumatoid Arthritis (seropositive + juvenile + other)
+  RheumArth:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['M05', 'M05.0', 'M05.00', 'M05.01', 'M05.02', 'M05.03', 'M05.04', 'M05.05', 'M05.06', 'M05.07', 'M05.08', 'M05.09', 'M05.1', 'M05.10', 'M05.11', 'M05.12', 'M05.13', 'M05.14', 'M05.15', 'M05.16', 'M05.17', 'M05.18', 'M05.19', 'M05.2', 'M05.20', 'M05.21', 'M05.22', 'M05.23', 'M05.24', 'M05.25', 'M05.26', 'M05.27', 'M05.28', 'M05.29', 'M05.3', 'M05.30', 'M05.31', 'M05.32', 'M05.33', 'M05.34', 'M05.35', 'M05.36', 'M05.37', 'M05.38', 'M05.39', 'M05.8', 'M05.80', 'M05.81', 'M05.82', 'M05.83', 'M05.84', 'M05.85', 'M05.86', 'M05.87', 'M05.88', 'M05.89', 'M05.9', 'M08', 'M08.0', 'M08.00', 'M08.01', 'M08.02', 'M08.03', 'M08.04', 'M08.05', 'M08.06', 'M08.07', 'M08.08', 'M08.09', 'M08.1', 'M08.10', 'M08.11', 'M08.12', 'M08.13', 'M08.14', 'M08.15', 'M08.16', 'M08.17', 'M08.18', 'M08.19', 'M08.2', 'M08.20', 'M08.21', 'M08.22', 'M08.23', 'M08.24', 'M08.25', 'M08.26', 'M08.27', 'M08.28', 'M08.29', 'M08.3', 'M08.30', 'M08.31', 'M08.32', 'M08.33', 'M08.34', 'M08.35', 'M08.36', 'M08.37', 'M08.38', 'M08.39', 'M08.4', 'M08.40', 'M08.41', 'M08.42', 'M08.43', 'M08.44', 'M08.45', 'M08.46', 'M08.47', 'M08.48', 'M08.49', 'M08.8', 'M08.80', 'M08.81', 'M08.82', 'M08.83', 'M08.84', 'M08.85', 'M08.86', 'M08.87', 'M08.88', 'M08.89', 'M08.9', 'M08.90', 'M08.91', 'M08.92', 'M08.93', 'M08.94', 'M08.95', 'M08.96', 'M08.97', 'M08.98', 'M08.99', 'M09', 'M09.0', 'M09.00', 'M09.01', 'M09.02', 'M09.03', 'M09.04', 'M09.05', 'M09.06', 'M09.07', 'M09.08', 'M09.09', 'M09.1', 'M09.10', 'M09.11', 'M09.12', 'M09.13', 'M09.14', 'M09.15', 'M09.16', 'M09.17', 'M09.18', 'M09.19', 'M09.2', 'M09.20', 'M09.21', 'M09.22', 'M09.23', 'M09.24', 'M09.25', 'M09.26', 'M09.27', 'M09.28', 'M09.29', 'M09.8']
+
+  # Romano-Ward Syndrome (autosomal dominant Long QT; I45.8)
+  RomWardSynd:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I45.8']
+
+  # Sarcoidosis
+  Sarcoid:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['D86.0', 'D86.1', 'D86.9', 'D86.2', 'D86.3', 'D86.8']
+
+  # Seborrheic Dermatitis
+  SebDerm:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['L21', 'L21.0', 'L21.1', 'L21.8', 'L21.9']
+
+  # Spina Bifida Aperta (open spina bifida)
+  SpinaBifAp:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Q05.8', 'Q05.9', 'Q05.0', 'Q05.1', 'Q05.2', 'Q05.3', 'Q05.4', 'Q05.5', 'Q05.6', 'Q05.7']
+
+  # Stomach / Gastric Cancer
+  StomCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['Z12.0', 'C16', 'C16.0', 'C16.1', 'C16.2', 'C16.3', 'C16.4', 'C16.5', 'C16.6', 'C16.8', 'C16.9', 'Z85.02']
+
+  # Ischemic Stroke (excludes hemorrhagic stroke and TIA)
+  Stroke:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I63.0', 'I63.3', 'I63.4', 'I63.5', 'I63.6', 'I63.8', 'I64', 'I63.349', 'I63.431', 'I63.533', 'I63.423', 'I63.439', 'I63.333', 'I63.421', 'I63.313', 'I63.311', 'I63.522', 'I63.34', 'I63.422', 'I63.513', 'I63.529', 'I63.413', 'I63.342', 'I63.43', 'I63.412', 'I63.54', 'I63.341', 'I63.542', 'I63.441', 'I63.319', 'I63.539', 'I63.5', 'I63.52', 'I63.32', 'I63.39', 'I63.31', 'I63.541', 'I63.523', 'I63.411', 'I63.49', 'I63.322', 'I63.443', 'I63.4', 'I63.8', 'I63.532', 'I63.44', 'I63.519', 'I63.339', 'I63.432', 'I63.449', 'I63.549', 'I63.433', 'I63.30', 'I63.40', 'I63.321', 'I63.0', 'I63.442', 'I63.323', 'I63.531', 'I63.511', 'I63.51', 'I63.312', 'I63.331', 'I63.512', 'I63.42', 'I63.50', 'I63.332', 'I63.33', 'I63.521', 'I63.343', 'I63.543', 'I63.41', 'I63.419', 'I63.9', 'I63.53', 'I63.329', 'I63.3', 'I63.429', 'I63.6', 'I63.59']
+        control_exclude: ['G45.0', 'G45.1', 'G45.2', 'G45.4', 'G45.8', 'G45.9', 'G46.0', 'G46.1', 'G46.2', 'G46.3', 'G46.4', 'G46.5', 'G46.6', 'G46.7', 'G46.8', 'I60', 'I60.0', 'I60.1', 'I60.2', 'I60.3', 'I60.4', 'I60.5', 'I60.6', 'I60.7', 'I60.8', 'I60.9', 'I61', 'I61.0', 'I61.1', 'I61.2', 'I61.3', 'I61.4', 'I61.5', 'I61.6', 'I61.8', 'I61.9', 'I62.0', 'I62.1', 'I62.9', 'I63', 'I63.1', 'I63.2', 'I63.9', 'I65', 'I65.0', 'I65.1', 'I65.2', 'I65.3', 'I65.8', 'I65.9', 'I66', 'I66.0', 'I66.1', 'I66.2', 'I66.3', 'I66.4', 'I66.8', 'I66.9', 'I67', 'I67.1', 'I67.2', 'I67.5', 'I67.6', 'I67.7', 'I67.8', 'I67.9', 'I68', 'I68.0', 'I68.2', 'I68.8', 'I69', 'I69.0', 'I69.1', 'I69.2', 'I69.3', 'I69.4', 'I69.8', 'S06.4', 'I65.0', 'I65.9', 'I65.23', 'I65', 'I65.03', 'I65.01', 'I65.2', 'I65.09', 'I65.21', 'I65.8', 'I65.02', 'I65.29', 'I65.1', 'I65.22', 'I67.1', 'I67.5', 'I67.82', 'I67.8', 'I67.81', 'I67.89', 'I66.1', 'I66.23', 'I66.21', 'I66.8', 'I66.3', 'I67.6', 'I66.02', 'I66.03', 'I66.13', 'I66.12', 'I66.01', 'I66.11', 'I66.9', 'I66.0', 'I66.2', 'I66.22', 'I66.09', 'I63', 'I66.19', 'I66', 'I66.29', 'I62.01', 'I62.0', 'I62.00', 'I62.02', 'I62.03', 'G45.9', 'G46.2', 'G45.0', 'Z86.73', 'G46.0', 'G46.1', 'G45.2', 'G45.8', 'G45.1', 'M47.02', 'I67.841', 'I67.848', 'G43.611', 'G43.601', 'G43.61', 'G43.609', 'G43.60', 'G43.619', 'G43.6', 'I62.9', 'I62.1', 'I60.2', 'I60.3', 'I60.32', 'I60.8', 'I60.52', 'I60.12', 'I60.00', 'I60.02', 'I60.5', 'I60.31', 'I60.6', 'I60.0', 'I60.30', 'I60.7', 'I60.01', 'I60.4', 'I60.1', 'I60.10', 'I60.11', 'I60.50', 'I60.9', 'I60.51', 'I61.9', 'I61.6', 'I61', 'I61.1', 'I61.5', 'I61.2', 'I61.4', 'I61.8', 'I61.0', 'I61.3', 'I63.02', 'I63.113', 'I63.1', 'I63.12', 'I63.20', 'I63.032', 'I63.131', 'I63.213', 'I63.012', 'I63.22', 'I63.119', 'I63.21', 'I63.231', 'I63.011', 'I63.233', 'I63.11', 'I63.211', 'I63.01', 'I63.019', 'I63.19', 'I63.212', 'I63.232', 'I63.03', 'I63.239', 'I63.139', 'I63.00', 'I63.039', 'I63.10', 'I63.031', 'I63.111', 'I63.13', 'I63.2', 'I63.112', 'I63.23', 'I63.219', 'I63.133', 'I63.09', 'I63.29', 'I63.132', 'I67.2', 'I69.892', 'I69.8', 'I69.069', 'I69.153', 'I69.269', 'I69.25', 'I69.313', 'I69.233', 'I69.162', 'I69.323', 'I69.293', 'I69.941', 'I69.292', 'I69.310', 'I69.214', 'I69.044', 'I69.81', 'I69.843', 'I69.921', 'I69.063', 'I69.20', 'I69.353', 'I69.113', 'I69.864', 'I69.354', 'I69.365', 'I69.042', 'I69.264', 'I69.391', 'I69.95', 'I69.190', 'I69.853', 'I69.021', 'I69.062', 'I69.314', 'I69.261', 'I69.123', 'I69.092', 'I69.963', 'I69.811', 'I69.231', 'I69.018', 'I69.322', 'I69.16', 'I69.193', 'I69.862', 'I69.212', 'I69.959', 'I69.861', 'I69.942', 'I69.319', 'I69.342', 'I69.992', 'I69.94', 'I69.239', 'I69.15', 'I69.3', 'I69.118', 'I69.92', 'I69.814', 'I69.969', 'I69.041', 'I69.098', 'I69.228', 'I69.24', 'I69.132', 'I69.819', 'I69.253', 'I69.211', 'I69.29', 'I69.111', 'I69.059', 'I69.0', 'I69.839', 'I69.00', 'I69.252', 'I69.090', 'I69.913', 'I69.965', 'I69.053', 'I69.80', 'I69.02', 'I69.832', 'I69.96', 'I69.869', 'I69.143', 'I69.85', 'I69.139', 'I69.144', 'I69.154', 'I69.03', 'I69.818', 'I69.223', 'I69.251', 'I69.151', 'I69.039', 'I69.84', 'I69.334', 'I69.369', 'I69.128', 'I69.054', 'I69.91', 'I69.010', 'I69.943', 'I69.931', 'I69.312', 'I69.934', 'I69.133', 'I69.859', 'I69.152', 'I69.244', 'I69.333', 'I69.221', 'I69.953', 'I69.243', 'I69.910', 'I69.328', 'I69.964', 'I69.120', 'I69.998', 'I69.262', 'I69.35', 'I69.1', 'I69.364', 'I69.033', 'I69.164', 'I69.918', 'I69.914', 'I69.191', 'I69.823', 'I69.19', 'I69.815', 'I69.019', 'I69.949', 'I69.234', 'I69.842', 'I69.242', 'I69.390', 'I69.822', 'I69.06', 'I69.810', 'I69.961', 'I69.359', 'I69.013', 'I69.121', 'I69.10', 'I69.05', 'I69.962', 'I69.30', 'I69.99', 'I69.844', 'I69.393', 'I69.31', 'I69.331', 'I69.352', 'I69.991', 'I69.114', 'I69.064', 'I69.318', 'I69.043', 'I69.093', 'I69.891', 'I69.091', 'I69.011', 'I69.919', 'I69.159', 'I69.993', 'I69.320', 'I69.11', 'I69.912', 'I69.052', 'I69.263', 'I69.990', 'I69.110', 'I69.954', 'I69.831', 'I69.259', 'I69.012', 'I69.933', 'I69.119', 'I69.9', 'I69.362', 'I69.213', 'I69.065', 'I69.82', 'I69.93', 'I69.915', 'I69.04', 'I69.351', 'I69.165', 'I69.332', 'I69.051', 'I69.363', 'I69.344', 'I69.161', 'I69.13', 'I69.852', 'I69.049', 'I69.115', 'I69.12', 'I69.321', 'I69.031', 'I69.932', 'I69.841', 'I69.36', 'I69.192', 'I69.022', 'I69.863', 'I69.020', 'I69.122', 'I69.061', 'I69.26', 'I69.149', 'I69.22', 'I69.198', 'I69.222', 'I69.854', 'I69.33', 'I69.023', 'I69.86', 'I69.349', 'I69.01', 'I69.898', 'I69.028', 'I69.014', 'I69.833', 'I69.39', 'I69.944', 'I69.90', 'I69.163', 'I69.341', 'I69.339', 'I69', 'I69.34', 'I69.220', 'I69.922', 'I69.032', 'I69.343', 'I69.851', 'I69.361', 'I69.812', 'I69.820', 'I69.142', 'I69.232', 'I69.112', 'I69.89', 'I69.392', 'I69.015', 'I69.32', 'I69.131', 'I69.169', 'I69.219', 'I69.291', 'I69.241', 'I69.849', 'I69.83', 'I69.951', 'I69.215', 'I69.893', 'I69.813', 'I69.834', 'I69.939', 'I69.890', 'I69.911', 'I69.254', 'I69.249', 'I69.09', 'I69.928', 'I69.265', 'I69.14', 'I69.21', 'I69.398', 'I69.134', 'I69.952', 'I69.210', 'I69.311', 'I69.920', 'I69.2', 'I69.23', 'I69.034', 'I69.821', 'I69.298', 'I69.923', 'I69.290', 'I69.218', 'I69.828', 'I69.141', 'I69.315', 'I69.865', 'I68', 'I68.2', 'G46.3', 'I68.8', 'G46.8', 'G45.4', 'G46.7', 'I67.7', 'G46.6', 'I67.9', 'I68.0', 'G46.4', 'G46.5']
+
+  # Systemic Lupus Erythematosus
+  SLE:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['M32.0', 'M32.1', 'M32.8', 'M32.9']
+
+  # Thoracic Aortic Aneurysm and Dissection
+  TAAD:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I71.01', 'I71.03', 'I71.1', 'I71.2', 'I71.5', 'I71.6']
+        control_exclude: ['I71.00', 'I71.01', 'I71.02', 'I71.03', 'I71.7', 'I71.2', 'I71.5', 'I71.6', 'I71.8', 'I71.9', 'Q23.1']
+
+  # Thyroid Cancer (excludes adrenal/parathyroid tumors)
+  ThyroCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C73', 'C73', 'Z85.850']
+        control_exclude: ['C74', 'C74.0', 'C74.1', 'C74.9', 'C75', 'C75.0', 'C75.1', 'C75.2', 'C75.3', 'C75.4', 'C75.5', 'C75.8', 'C75.9', 'D34', 'D35.0', 'D35.1', 'D35.2', 'D35.3', 'D35.4', 'D35.5', 'D35.6', 'D35.7', 'D35.8', 'D35.9', 'C74', 'C74.92', 'C74.01', 'C75', 'C75.2', 'C75.0', 'C74.00', 'C75.4', 'C74.0', 'C74.11', 'C74.91', 'C75.1', 'C75.9', 'C74.9', 'C74.90', 'C74.1', 'C74.10', 'C75.5', 'C75.8', 'C75.3', 'C74.12', 'C74.02', 'Z85.858', 'D35.3', 'D35.2', 'D35.0', 'D35.02', 'D35.01', 'D35.00', 'D34', 'D35.1', 'D35.7', 'D35.9', 'D35.6', 'D35.4', 'D35.5']
+
+  # Urolithiasis / Kidney and Urinary Tract Stones
+  Urolith:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['N20', 'N20.0', 'N20.1', 'N20.2', 'N20.9', 'N21', 'N21.0', 'N21.1', 'N21.8', 'N21.9', 'N22', 'N22.0', 'N22.8', 'N23']
+
+  # Uterine / Endometrial Cancer
+  UterCanc:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['C54', 'C54.0', 'C54.1', 'C54.2', 'C54.3', 'C54.8', 'C54.9', 'C55', 'D07.0', 'C54.9', 'D07.0', 'C54.2', 'C55', 'C54.3', 'C54.8', 'C54', 'C54.1', 'C54.0', 'Z85.42']
+        control_exclude: ['C50', 'C50.0', 'C50.1', 'C50.2', 'C50.3', 'C50.4', 'C50.5', 'C50.6', 'C50.8', 'C50.9', 'C51', 'C51.0', 'C51.1', 'C51.2', 'C51.8', 'C51.9', 'C52', 'C53', 'C53.0', 'C53.1', 'C53.8', 'C53.9', 'C56', 'C57', 'C57.0', 'C57.1', 'C57.2', 'C57.3', 'C57.4', 'C57.7', 'C57.8', 'C57.9', 'C58', 'D05', 'D05.1', 'D05.7', 'D05.9', 'D06', 'D06.0', 'D06.1', 'D06.7', 'D06.9', 'D07.1', 'D07.2', 'D07.3', 'D25', 'D25.0', 'D25.1', 'D25.2', 'D25.9', 'D26', 'D26.0', 'D26.1', 'D26.7', 'D26.9', 'D39', 'D39.0', 'D39.1', 'D39.2', 'D39.9', 'D48.6', 'N87', 'N87.0', 'N87.1', 'N87.2', 'N87.9', 'N90.3', 'Z85.3', 'Z90.1', 'Z85.3', 'N87', 'N87.0', 'D06.0', 'N87.9', 'N87.1', 'D06', 'D06.1', 'D06.7', 'D06.9', 'C57.00', 'C57.22', 'C57.20', 'C57.0', 'C57', 'C57.8', 'C57.4', 'C57.02', 'C57.1', 'C57.11', 'C57.21', 'C57.01', 'C57.10', 'C57.12', 'C58', 'C57.9', 'C57.3', 'C57.2', 'C57.7', 'C51.8', 'D26.0', 'D26.9', 'D26', 'D26.1', 'D26.7', 'N65', 'N65.0', 'N65.1', 'D25.0', 'D25.2', 'D25.1', 'D25.9', 'D25', 'D07.3', 'D07.2', 'D39.0', 'D07.39', 'N90.3', 'D39.8', 'D07.1', 'C51.1', 'D39.2', 'D07.30', 'C51.9', 'D39.9', 'C51.2', 'C51.0', 'C52', 'D39', 'C51', 'D48.61', 'D48.60', 'D48.6', 'D49.3', 'D48.62', 'D05.10', 'D05.90', 'D05.01', 'D05.02', 'D05.1', 'D05.11', 'D05', 'D05.80', 'D05.82', 'D05.92', 'D05.0', 'D05.12', 'D05.91', 'D05.8', 'D05.9', 'D05.81', 'D05.00', 'C53', 'C53.9', 'C53.0', 'C53.8', 'C53.1', 'C50.522', 'C50.82', 'C50.021', 'C50.421', 'C50.029', 'C50.822', 'C50.622', 'C50.121', 'C50.429', 'C50.321', 'C50.921', 'C50.42', 'C50.929', 'C50.222', 'C50.52', 'C50.122', 'C50.32', 'C50.422', 'C50.529', 'C50.92', 'C50.229', 'C50.62', 'C50.22', 'C50.821', 'C50.922', 'C50.322', 'C50.329', 'C50.629', 'C50.02', 'C50.521', 'C50.221', 'C50.621', 'C50.129', 'C50.829', 'C50.12', 'C50.022', 'Z85.44', 'Z85.40', 'D39.10', 'Z85.41', 'D39.11', 'D39.12', 'D39.1', 'Z85.43', 'C56.2', 'C56.9', 'C56.1', 'C56', 'C50.211', 'C50.011', 'C50.51', 'C50.511', 'C50.919', 'C50.11', 'C50.811', 'C50.619', 'C50.119', 'C50.112', 'C50.411', 'C50.611', 'C50.219', 'C50.312', 'C50.61', 'C50', 'C50.912', 'C50.519', 'C50.212', 'C50.812', 'C50.412', 'C50.21', 'C50.111', 'C50.8', 'C50.319', 'C50.019', 'C50.311', 'C50.01', 'C50.41', 'C50.012', 'C50.512', 'C50.81', 'C50.819', 'C50.419', 'C50.91', 'C50.911', 'C50.612', 'C50.31']
+
+  # Varicose Veins of Lower Extremities
+  VaricVeins:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I83', 'I83.*']
+
+  # Venous Thromboembolism (DVT I80.1/I80.2/I82.2 + PE I26; excludes portal vein thrombosis)
+  VTE:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: ['I80.1', 'I80.2', 'I82.2', 'I26.0', 'I26.9']
+        control_exclude: ['I81', 'I82.0', 'I80.0', 'I80.3', 'I80.8', 'I80.9', 'D68']

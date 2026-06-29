@@ -1,0 +1,364 @@
+# community/event_mask.yaml
+#
+# Production-tested obstetric event mask for use with pmbb-nf-toolkit-phenotyping.
+# Validated in the Penn Medicine BioBank (PMBB).
+#
+# This is a production alternative to examples/event_mask_example.yaml, which
+# contains minimal illustrative windows. The windows here were clinically validated
+# for masking quantitative measurements (labs, vitals) during pregnancy.
+#
+# Usage:
+#   nextflow run main.nf --event_mask_config community/event_mask.yaml ...
+#
+#   In your biobank config, opt a phenotype into masking:
+#     BMI:
+#       data_type: quantitative
+#       event_mask: [first_trimester, second_trimester, third_trimester]
+#       ...
+#
+# Code format:
+#   Bare codes (no dot) are prefix-matched: O83 → O83.0, O83.3, etc.
+#   Dotted codes (e.g. O00.10) are exact matches.
+
+events:
+  first_trimester:
+    source: ICD10
+    codes:
+    # ── Recurrent pregnancy loss ──────────────────────────────────────────────
+    - N96       # Recurrent pregnancy loss (non-obstetric code; flags at-risk history)
+
+    # ── Ectopic pregnancy (O00) ───────────────────────────────────────────────
+    # Abdominal ectopic (O00.0x)
+    - O00.00    # Abdominal pregnancy without intrauterine pregnancy
+    - O00.01    # Abdominal pregnancy with concurrent intrauterine pregnancy
+    # Tubal ectopic (O00.1x) — most common ectopic site (~96 % of ectopics)
+    - O00.1     # Tubal pregnancy, laterality unspecified (category)
+    - O00.10    # Tubal pregnancy without intrauterine pregnancy, side unspecified
+    - O00.101   # Right tubal pregnancy without intrauterine pregnancy
+    - O00.102   # Left tubal pregnancy without intrauterine pregnancy
+    - O00.109   # Tubal pregnancy without intrauterine pregnancy, side unspecified
+    - O00.11    # Tubal pregnancy with intrauterine pregnancy, side unspecified
+    - O00.111   # Right tubal pregnancy with intrauterine pregnancy
+    - O00.112   # Left tubal pregnancy with intrauterine pregnancy
+    - O00.119   # Tubal pregnancy with intrauterine pregnancy, side unspecified
+    # Ovarian ectopic (O00.2x)
+    - O00.2     # Ovarian pregnancy, side unspecified (category)
+    - O00.20    # Ovarian pregnancy without intrauterine pregnancy, side unspecified
+    - O00.201   # Right ovarian pregnancy without intrauterine pregnancy
+    - O00.202   # Left ovarian pregnancy without intrauterine pregnancy
+    - O00.209   # Ovarian pregnancy without intrauterine pregnancy, side unspecified
+    - O00.21    # Ovarian pregnancy with intrauterine pregnancy, side unspecified
+    - O00.211   # Right ovarian pregnancy with intrauterine pregnancy
+    - O00.212   # Left ovarian pregnancy with intrauterine pregnancy
+    - O00.219   # Ovarian pregnancy with intrauterine pregnancy, side unspecified
+    # Other / unspecified ectopic sites (O00.8–O00.9): cervical, intraligamentous, cornual, etc.
+    - O00.8     # Other ectopic pregnancy (e.g., cervical, cornual, intraligamentous)
+    - O00.80    # Other ectopic pregnancy without intrauterine pregnancy
+    - O00.81    # Other ectopic pregnancy with intrauterine pregnancy
+    - O00.9     # Ectopic pregnancy, site unspecified
+    - O00.90    # Ectopic pregnancy, unspecified, without intrauterine pregnancy
+    - O00.91    # Ectopic pregnancy, unspecified, with intrauterine pregnancy
+
+    # ── Hydatidiform mole (O01) ───────────────────────────────────────────────
+    - O01.0     # Classical (complete) hydatidiform mole
+    - O01.1     # Incomplete and partial hydatidiform mole
+    - O01.9     # Hydatidiform mole, unspecified
+
+    # ── Other abnormal products of conception (O02) ───────────────────────────
+    - O02.0     # Blighted ovum and nonhydatidiform mole (anembryonic pregnancy)
+    - O02.1     # Missed abortion: fetal death <20 wks without spontaneous expulsion
+
+    # ── Spontaneous abortion (O03) ────────────────────────────────────────────
+    # Incomplete abortion (products of conception retained)
+    - O03.0     # Incomplete spontaneous abortion with genital tract / pelvic infection
+    - O03.1     # Incomplete spontaneous abortion with delayed or excessive hemorrhage
+    - O03.2     # Incomplete spontaneous abortion with embolism
+    - O03.39    # Incomplete spontaneous abortion with other / unspecified complications
+    - O03.4     # Incomplete spontaneous abortion without complication
+    # Complete or unspecified abortion
+    - O03.5     # Complete/unspecified spontaneous abortion with genital tract / pelvic infection
+    - O03.6     # Complete/unspecified spontaneous abortion with delayed or excessive hemorrhage
+    - O03.7     # Complete/unspecified spontaneous abortion with embolism
+    - O03.8     # Complete/unspecified spontaneous abortion with other complications (category)
+    - O03.87    # Complete/unspecified spontaneous abortion with sepsis
+    - O03.89    # Complete/unspecified spontaneous abortion with other complications
+    - O03.9     # Complete/unspecified spontaneous abortion without complication
+
+    # ── Supervision of high-risk pregnancy (O09) ──────────────────────────────
+    # History of ectopic pregnancy — flags patients with prior ectopic at any trimester
+    - O09.10    # Supervision: prior ectopic pregnancy, trimester unspecified
+    - O09.11    # Supervision: prior ectopic pregnancy, first trimester
+    # History of preterm labor — first trimester surveillance
+    - O09.21    # Supervision: prior preterm labor, first trimester (category)
+    - O09.211   # Supervision: prior preterm labor, first trimester
+    - O09.219   # Supervision: prior preterm labor, first trimester, unspecified
+    # Other poor reproductive / obstetric history (catch-all, trimester unspecified)
+    - O09.299   # Supervision: other poor reproductive or obstetric history, trimester unspecified
+    # Assisted reproductive technology (ART: IVF, ICSI, FET, etc.)
+    - O09.A0    # Supervision: ART-assisted pregnancy, trimester unspecified
+    - O09.A1    # Supervision: ART-assisted pregnancy, first trimester
+
+    # ── Pregnancy care for recurrent pregnancy loss (O26.2) ───────────────────
+    - O26.20    # Pregnancy care: recurrent pregnancy loss, trimester unspecified
+    - O26.21    # Pregnancy care: recurrent pregnancy loss, first trimester
+
+    # ── Papyraceous fetus — one twin dies in utero, compressed by co-twin (O31.0) ─
+    # X suffix encodes which fetus of a multifetal pregnancy:
+    #   X0 = not applicable/unspecified  X1–X5 = fetus 1–5  X9 = other fetus
+    - O31.01    # Papyraceous fetus, first trimester, fetus unspecified
+    - O31.01X0  # Papyraceous fetus, first trimester, not applicable
+    - O31.01X1  # Papyraceous fetus, first trimester, fetus 1
+    - O31.01X2  # Papyraceous fetus, first trimester, fetus 2
+    - O31.01X3  # Papyraceous fetus, first trimester, fetus 3
+    - O31.01X4  # Papyraceous fetus, first trimester, fetus 4
+    - O31.01X5  # Papyraceous fetus, first trimester, fetus 5
+    - O31.01X9  # Papyraceous fetus, first trimester, other fetus
+
+    # ── Continuing pregnancy after spontaneous abortion of one fetus (O31.1) ───
+    # One fetus of a multifetal pregnancy lost; pregnancy continues with remaining fetus(es)
+    # Trimester-unspecified codes (catch-all when trimester not documented)
+    - O31.10    # Continuing after SAb of one fetus, trimester unspecified, fetus unspecified
+    - O31.10X0  # Continuing after SAb, trimester unspecified, not applicable
+    - O31.10X1  # Continuing after SAb, trimester unspecified, fetus 1
+    - O31.10X2  # Continuing after SAb, trimester unspecified, fetus 2
+    - O31.10X3  # Continuing after SAb, trimester unspecified, fetus 3
+    - O31.10X4  # Continuing after SAb, trimester unspecified, fetus 4
+    - O31.10X5  # Continuing after SAb, trimester unspecified, fetus 5
+    - O31.10X9  # Continuing after SAb, trimester unspecified, other fetus
+    # First trimester
+    - O31.11    # Continuing after SAb of one fetus, first trimester, fetus unspecified
+    - O31.11X0  # Continuing after SAb, first trimester, not applicable
+    - O31.11X1  # Continuing after SAb, first trimester, fetus 1
+    - O31.11X2  # Continuing after SAb, first trimester, fetus 2
+    - O31.11X3  # Continuing after SAb, first trimester, fetus 3
+    - O31.11X4  # Continuing after SAb, first trimester, fetus 4
+    - O31.11X5  # Continuing after SAb, first trimester, fetus 5
+    - O31.11X9  # Continuing after SAb, first trimester, other fetus
+
+    # ── Maternal care for viable fetus in abdominal pregnancy (O36.7) ─────────
+    # Rare: live fetus in an abdominal implantation site that has survived beyond early gestation.
+    # Trimester-unspecified codes (catch-all when trimester not documented)
+    - O36.70    # Maternal care: viable fetus in abdominal pregnancy, trimester unspecified
+    - O36.70X0  # ...trimester unspecified, not applicable
+    - O36.70X1  # ...trimester unspecified, fetus 1
+    - O36.70X2  # ...trimester unspecified, fetus 2
+    - O36.70X3  # ...trimester unspecified, fetus 3
+    - O36.70X4  # ...trimester unspecified, fetus 4
+    - O36.70X5  # ...trimester unspecified, fetus 5
+    - O36.70X9  # ...trimester unspecified, other fetus
+    # First trimester
+    - O36.71    # Maternal care: viable fetus in abdominal pregnancy, first trimester
+    - O36.71X0  # ...first trimester, not applicable
+    - O36.71X1  # ...first trimester, fetus 1
+    - O36.71X2  # ...first trimester, fetus 2
+    - O36.71X3  # ...first trimester, fetus 3
+    - O36.71X4  # ...first trimester, fetus 4
+    - O36.71X5  # ...first trimester, fetus 5
+    - O36.71X9  # ...first trimester, other fetus
+
+    # ── Preterm premature rupture of membranes — pPROM (O42) ──────────────────
+    # Labor onset within 24 hours of rupture
+    - O42.011   # pPROM, labor onset <24 hrs after rupture, first trimester
+    - O42.019   # pPROM, labor onset <24 hrs after rupture, trimester unspecified
+    # Labor onset more than 24 hours after rupture
+    - O42.111   # pPROM, labor onset >24 hrs after rupture, first trimester
+    # Onset interval unspecified
+    - O42.911   # pPROM, onset interval unspecified, first trimester
+    offset_before: 0
+    offset_after: 360
+
+  second_trimester:
+    source: ICD10
+    codes:
+    # ── Supervision of high-risk pregnancy (O09) ──────────────────────────────
+    - O09.12    # Supervision: prior ectopic pregnancy, second trimester
+    - O09.212   # Supervision: prior preterm labor, second trimester
+    - O09.A2    # Supervision: ART-assisted pregnancy, second trimester
+
+    # ── Pregnancy care for recurrent pregnancy loss (O26.2) ───────────────────
+    - O26.22    # Pregnancy care: recurrent pregnancy loss, second trimester
+
+    # ── Papyraceous fetus, second trimester (O31.0) ───────────────────────────
+    # X0 = not applicable  X1–X5 = fetus 1–5  X9 = other fetus
+    - O31.02    # Papyraceous fetus, second trimester, fetus unspecified
+    - O31.02X0  # Papyraceous fetus, second trimester, not applicable
+    - O31.02X1  # Papyraceous fetus, second trimester, fetus 1
+    - O31.02X2  # Papyraceous fetus, second trimester, fetus 2
+    - O31.02X3  # Papyraceous fetus, second trimester, fetus 3
+    - O31.02X4  # Papyraceous fetus, second trimester, fetus 4
+    - O31.02X5  # Papyraceous fetus, second trimester, fetus 5
+    - O31.02X9  # Papyraceous fetus, second trimester, other fetus
+
+    # ── Continuing pregnancy after spontaneous abortion of one fetus, second tri ─
+    - O31.12    # Continuing after SAb of one fetus, second trimester, fetus unspecified
+    - O31.12X0  # Continuing after SAb, second trimester, not applicable
+    - O31.12X1  # Continuing after SAb, second trimester, fetus 1
+    - O31.12X2  # Continuing after SAb, second trimester, fetus 2
+    - O31.12X3  # Continuing after SAb, second trimester, fetus 3
+    - O31.12X4  # Continuing after SAb, second trimester, fetus 4
+    - O31.12X5  # Continuing after SAb, second trimester, fetus 5
+    - O31.12X9  # Continuing after SAb, second trimester, other fetus
+
+    # ── Maternal care for viable fetus in abdominal pregnancy, second tri (O36.7) ─
+    - O36.72    # Maternal care: viable fetus in abdominal pregnancy, second trimester
+    - O36.72X0  # ...second trimester, not applicable
+    - O36.72X1  # ...second trimester, fetus 1
+    - O36.72X2  # ...second trimester, fetus 2
+    - O36.72X3  # ...second trimester, fetus 3
+    - O36.72X4  # ...second trimester, fetus 4
+    - O36.72X5  # ...second trimester, fetus 5
+    - O36.72X9  # ...second trimester, other fetus
+
+    # ── Preterm premature rupture of membranes — pPROM, second trimester (O42) ─
+    - O42.012   # pPROM, labor onset <24 hrs after rupture, second trimester
+    - O42.112   # pPROM, labor onset >24 hrs after rupture, second trimester
+    - O42.912   # pPROM, onset interval unspecified, second trimester
+
+    # ── Preterm labor (O60) ───────────────────────────────────────────────────
+    # Labor without delivery
+    - O60.02    # Preterm labor without delivery, second trimester
+    # Preterm labor in second trimester with preterm delivery in second trimester
+    - O60.12    # Preterm labor (2nd tri) → preterm delivery in 2nd tri (category)
+    - O60.12X0  # ...not applicable
+    - O60.12X1  # ...fetus 1
+    - O60.12X2  # ...fetus 2
+    - O60.12X3  # ...fetus 3
+    - O60.12X4  # ...fetus 4
+    - O60.12X5  # ...fetus 5
+    - O60.12X9  # ...other fetus
+    # Preterm labor in second trimester that results in third-trimester delivery
+    - O60.13    # Preterm labor (2nd tri) → preterm delivery in 3rd tri (category)
+    - O60.13X0  # ...not applicable
+    - O60.13X1  # ...fetus 1
+    - O60.13X2  # ...fetus 2
+    - O60.13X3  # ...fetus 3
+    - O60.13X4  # ...fetus 4
+    - O60.13X5  # ...fetus 5
+    - O60.13X9  # ...other fetus
+    # Term delivery with second-trimester preterm labor onset
+    - O60.22    # Term delivery with preterm labor, second trimester (category)
+    - O60.22X0  # ...not applicable
+    - O60.22X1  # ...fetus 1
+    - O60.22X2  # ...fetus 2
+    - O60.22X3  # ...fetus 3
+    - O60.22X4  # ...fetus 4
+    - O60.22X5  # ...fetus 5
+    - O60.22X9  # ...other fetus
+    # Non-billable O60 header present in PMBB extract (unspecified preterm labor/delivery)
+    - O60.3     # Preterm labor and delivery, unspecified (O60 category header code)
+
+    # ── Other assisted delivery (O83) ─────────────────────────────────────────
+    # O83 = other assisted single delivery (e.g., forceps, vacuum, internal version)
+    - O83.3     # Other assisted delivery, subtype (non-billable or dataset-specific O83 code)
+
+    # ── Stillbirth ────────────────────────────────────────────────────────────
+    - P95       # Stillbirth (fetal death; gestational age and weight unspecified)
+
+    # ── Outcome of delivery (Z37) — applied to the mother's record ───────────
+    - Z37.0     # Single liveborn infant
+    - Z37.1     # Single stillborn infant
+    - Z37.2     # Twins, both liveborn
+    - Z37.3     # Twins, one liveborn and one stillborn
+    - Z37.4     # Twins, both stillborn
+    - Z37.5     # Other multiple births, all liveborn (category)
+    - Z37.51    # Triplets, all liveborn
+    - Z37.52    # Quadruplets, all liveborn
+    - Z37.53    # Quintuplets, all liveborn
+    - Z37.54    # Sextuplets, all liveborn
+    - Z37.59    # Other multiple births, all liveborn
+    - Z37.7     # Other multiple births, some liveborn and some stillborn
+    - Z37.9     # Outcome of delivery, unspecified
+
+    # ── Liveborn infant — coded on the newborn's record (Z38) ────────────────
+    # Only vaginal-delivery codes present; cesarean equivalents (01, 31, 62, 64, 66, 69) omitted
+    - Z38.00    # Single liveborn, born in hospital, vaginal delivery
+    - Z38.30    # Twin liveborn, born in hospital, vaginal delivery
+    - Z38.61    # Triplet liveborn, born in hospital, vaginal delivery
+    - Z38.63    # Quadruplet liveborn, born in hospital, vaginal delivery
+    - Z38.65    # Quintuplet liveborn, born in hospital, vaginal delivery
+    - Z38.68    # Other multiple liveborn, born in hospital, vaginal delivery
+    offset_before: -90
+    offset_after: 270
+
+  third_trimester:
+    source: ICD10
+    codes:
+    # ── Supervision of high-risk pregnancy (O09) ──────────────────────────────
+    - O09.13    # Supervision: prior ectopic pregnancy, third trimester
+    - O09.213   # Supervision: prior preterm labor, third trimester
+    - O09.A3    # Supervision: ART-assisted pregnancy, third trimester
+
+    # ── Pregnancy care for recurrent pregnancy loss (O26.2) ───────────────────
+    - O26.23    # Pregnancy care: recurrent pregnancy loss, third trimester
+
+    # ── Papyraceous fetus, third trimester (O31.0) ────────────────────────────
+    # X0 = not applicable  X1–X5 = fetus 1–5  X9 = other fetus
+    - O31.03    # Papyraceous fetus, third trimester, fetus unspecified
+    - O31.03X0  # Papyraceous fetus, third trimester, not applicable
+    - O31.03X1  # Papyraceous fetus, third trimester, fetus 1
+    - O31.03X2  # Papyraceous fetus, third trimester, fetus 2
+    - O31.03X3  # Papyraceous fetus, third trimester, fetus 3
+    - O31.03X4  # Papyraceous fetus, third trimester, fetus 4
+    - O31.03X5  # Papyraceous fetus, third trimester, fetus 5
+    - O31.03X9  # Papyraceous fetus, third trimester, other fetus
+
+    # ── Continuing pregnancy after spontaneous abortion of one fetus, third tri ─
+    - O31.13    # Continuing after SAb of one fetus, third trimester, fetus unspecified
+    - O31.13X0  # Continuing after SAb, third trimester, not applicable
+    - O31.13X1  # Continuing after SAb, third trimester, fetus 1
+    - O31.13X2  # Continuing after SAb, third trimester, fetus 2
+    - O31.13X3  # Continuing after SAb, third trimester, fetus 3
+    - O31.13X4  # Continuing after SAb, third trimester, fetus 4
+    - O31.13X5  # Continuing after SAb, third trimester, fetus 5
+    - O31.13X9  # Continuing after SAb, third trimester, other fetus
+
+    # ── Maternal care for viable fetus in abdominal pregnancy, third tri (O36.7) ─
+    - O36.73    # Maternal care: viable fetus in abdominal pregnancy, third trimester
+    - O36.73X0  # ...third trimester, not applicable
+    - O36.73X1  # ...third trimester, fetus 1
+    - O36.73X2  # ...third trimester, fetus 2
+    - O36.73X3  # ...third trimester, fetus 3
+    - O36.73X4  # ...third trimester, fetus 4
+    - O36.73X5  # ...third trimester, fetus 5
+    - O36.73X9  # ...third trimester, other fetus
+
+    # ── Preterm premature rupture of membranes — pPROM, third trimester (O42) ─
+    - O42.013   # pPROM, labor onset <24 hrs after rupture, third trimester
+    - O42.113   # pPROM, labor onset >24 hrs after rupture, third trimester
+    - O42.913   # pPROM, onset interval unspecified, third trimester
+
+    # ── Preterm labor (O60) ───────────────────────────────────────────────────
+    # Labor without delivery
+    - O60.03    # Preterm labor without delivery, third trimester
+    # Preterm labor in third trimester with preterm delivery in third trimester
+    - O60.14    # Preterm labor (3rd tri) → preterm delivery in 3rd tri (category)
+    - O60.14X0  # ...not applicable
+    - O60.14X1  # ...fetus 1
+    - O60.14X2  # ...fetus 2
+    - O60.14X3  # ...fetus 3
+    - O60.14X4  # ...fetus 4
+    - O60.14X5  # ...fetus 5
+    - O60.14X9  # ...other fetus
+    # Term delivery with preterm labor — unspecified or third-trimester onset
+    - O60.2     # Term delivery with preterm labor (category header)
+    - O60.20    # Term delivery with preterm labor, trimester unspecified
+    - O60.20X0  # ...trimester unspecified, not applicable
+    - O60.20X1  # ...trimester unspecified, fetus 1
+    - O60.20X2  # ...trimester unspecified, fetus 2
+    - O60.20X3  # ...trimester unspecified, fetus 3
+    - O60.20X4  # ...trimester unspecified, fetus 4
+    - O60.20X5  # ...trimester unspecified, fetus 5
+    - O60.20X9  # ...trimester unspecified, other fetus
+    - O60.23    # Term delivery with preterm labor, third trimester
+    - O60.23X0  # ...third trimester, not applicable
+    - O60.23X1  # ...third trimester, fetus 1
+    - O60.23X2  # ...third trimester, fetus 2
+    - O60.23X3  # ...third trimester, fetus 3
+    - O60.23X4  # ...third trimester, fetus 4
+    - O60.23X5  # ...third trimester, fetus 5
+    - O60.23X9  # ...third trimester, other fetus
+
+    # ── Full-term uncomplicated delivery (O80) ────────────────────────────────
+    - O80       # Encounter for full-term uncomplicated delivery (spontaneous vertex)
+    offset_before: -180
+    offset_after: 180
