@@ -1,0 +1,57 @@
+# community/risk_classification.yaml
+#
+# Production-tested risk classification rules for common quantitative phenotypes.
+# Validated in the Penn Medicine BioBank (PMBB).
+#
+# This is NOT a standalone pipeline config file. Risk classification rules are
+# defined per-phenotype inside your biobank config (pmbb_config.yaml). Copy the
+# risk_classification block from any entry here into the matching phenotype in
+# your config.
+#
+# Method reference:
+#   percentile   — cutoff computed from data via np.nanpercentile (0–100 scale)
+#   threshold    — fixed absolute cutoff (raw value)
+#   quantile_bin — equal-frequency bins via pd.qcut(q=N)
+#                  high: k → top k bins = 1; low: k → bottom k bins = 1
+#                  omit high/low → all bins become multi-level output
+#
+# See examples/advanced_coded_example.yaml and the pipeline README for
+# full documentation of the risk_classification config schema.
+
+phenotypes:
+
+  BMI:
+    # Quintiles: Q1 (lowest) … Q5 (highest) for downstream GWAS stratification
+    risk_classification:
+      method: quantile_bin
+      n: 5
+      labels: [Q1, Q2, Q3, Q4, Q5]
+
+  BP_systolic:
+    # > 140 mmHg = hypertension stage 2+ (JNC 8 / ACC/AHA 2017 threshold)
+    risk_classification:
+      method: threshold
+      stat: mean
+      high: 140
+
+  BP_diastolic:
+    # > 90 mmHg = hypertension (JNC 8 threshold)
+    risk_classification:
+      method: threshold
+      stat: mean
+      high: 90
+
+  HDL_cholesterol:
+    # Top quartile = high HDL (cardioprotective); binary flag
+    risk_classification:
+      method: quantile_bin
+      n: 4
+      high: 1
+
+  LDL_cholesterol:
+    # Bottom quartile = very low LDL; binary flag
+    # (useful for identifying patients on aggressive statin therapy)
+    risk_classification:
+      method: quantile_bin
+      n: 4
+      low: 1

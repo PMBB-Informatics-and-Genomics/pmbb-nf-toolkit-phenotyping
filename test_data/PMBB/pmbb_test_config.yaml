@@ -1,0 +1,65 @@
+global:
+  sample_id_col: PMBB_ID
+  reference_date: "2023-01-01"
+  outlier_method: iqr
+  outlier_mode: cap
+  outlier_iqr_multiplier: 1.5
+  outlier_zscore_sd: 3.0
+
+data_types:
+  quantitative:
+    stats: [mean, std]
+    qcut_bins: 0
+    scale: false
+    scale_method: zscore
+    min_occurrences: 1
+  categorical:
+    missing_as_control: false
+    one_hot: false
+    min_occurrences: 1
+  coded:
+    min_occurrences: 1
+    missing_as_control: false
+
+phenotypes:
+  BMI:
+    table: vitals_bmi.tsv
+    data_type: quantitative
+    value_col: BMI_VALUE
+    date_col: VISIT_DATE
+
+  HDLC:
+    table: labs_lipids.tsv
+    data_type: quantitative
+    value_col: RESULT_VALUE_NUM
+    date_col: RESULT_DATE
+    filter:
+      MEASUREMENT_TYPE: [HDL]
+    output_name: HDLC
+
+  SEX:
+    table: covariates.tsv
+    data_type: categorical
+    value_col: SEX
+    dictionary:
+      female: 0
+      male: 1
+      unknown: NA
+    output_name: SEX
+
+  ANCESTRY:
+    table: covariates.tsv
+    data_type: categorical
+    value_col: ANCESTRY
+    one_hot: true
+    categories: [AFR, EUR, AMR, EAS, SAS, OTH]
+    output_name: ANCESTRY
+
+  ICD10:
+    table: icd.tsv
+    data_type: coded
+    value_col: ICD_CODE
+    date_col: ENCOUNTER_DATE
+    filter:
+      CODE_TYPE: [ICD10]
+    subsample: all
