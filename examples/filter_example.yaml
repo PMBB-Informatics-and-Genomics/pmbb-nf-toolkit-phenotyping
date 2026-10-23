@@ -1,0 +1,75 @@
+# filter_example.yaml — post-processing filter configuration (--filter_config)
+#
+# Pipeline outputs stay raw. This optional step reads the gathered wide table
+# and writes NEW files under {output_dir}/filtered/:
+#   phenotype_table.filtered.wide.tsv   kept columns; out-of-scope samples → NA
+#   phenotype_manifest.filtered.tsv     manifest rows for kept columns
+#   filter_log.tsv                      every dropped / kept / restricted column,
+#                                       with reason and counts set to NA
+#
+# Normal workflow: run with --run_eda, copy eda/filter_suggested.yaml (already
+# filled in with your flagged columns), edit, then:
+#   nextflow run main.nf <same args> --run_gather --run_eda \
+#       --filter_config my_filter.yaml -resume
+#
+# Standalone on a finished output directory:
+#   filter_phenotypes.py --config my_filter.yaml \
+#       --input results/phenotype_table.wide.tsv \
+#       --covariates results/eda/eda_covariates.tsv \
+#       --summary results/eda/eda_summary.tsv \
+#       --manifest results/phenotype_manifest.tsv \
+#       --output_dir results/filtered
+#
+# Column patterns are exact names or fnmatch globs (*, ?, [0-9]) on OUTPUT
+# column names — include column_prefix if your coded phenotypes set one.
+# Patterns that match nothing only warn. Unknown keys are an error.
+# Every key is optional. See also: community/filter.yaml,
+# community/sex_specific/.
+
+# Columns to remove.
+drop_columns:
+  - HDLC_std                  # exact name
+  - "*_std"                   # glob: every std stat column
+
+# Drop every column carrying any of these EDA flags (needs eda/eda_summary.tsv).
+# Flags: empty, zero_variance, single_level, low_cases, high_missing,
+# missing_by_covariate, no_controls, separation_complete, separation_quasi,
+# pairwise_duplicate, pairwise_nested.
+drop_flags: [empty, zero_variance, single_level, low_cases]
+
+# Always kept — overrides drop_columns and drop_flags (logged as 'kept').
+keep_columns:
+  - SEX
+  - "ANCESTRY_*"
+
+# {column or glob: {covariate: C, level: L}}. Samples whose covariate C is not
+# L are set to NA in the matching columns — cases included; those cases are
+# counted in filter_log.tsv as likely miscodes. Needs eda/eda_covariates.tsv.
+#   C: a covariate from eda.covariates / covariates_file
+#   L: the LEVEL CODE from eda_covariates.tsv (= restriction_suggestions.tsv
+#      `level`), not the label: with dictionary {female: 0, male: 1}, female is "0".
+#      A list keeps several levels: level: ["1", "2"].
+# Ready-made sex-specific blocks (ICD-9/10, phecode 1.2, phecodeX):
+# community/sex_specific/.
+restrictions:
+  "N80*":   {covariate: SEX, level: "0"}   # endometriosis → females only
+  "N40*":   {covariate: SEX, level: "1"}   # prostatic hyperplasia → males only
+  PCOS:     {covariate: SEX, level: "0"}   # a named advanced_coded column
+  SITE_LAB: {covariate: COHORT, level: ["1", "2"]}   # measured only in cohorts A, B
+
+# Rule-based, data-driven restrictions (needs eda/eda_summary.tsv): restrict
+# every column whose cases the EDA found confined to a level — or a subset of
+# levels — of one of `covariates`, with share of cases >= min_share. The
+# confining level(s) come from the EDA (sep_detail), so nothing is listed by
+# hand. Omit `covariates` to use all. Interactions from
+# eda.separation_interactions are covariates too, e.g. COHORT&SEX. An explicit `restrictions` entry for a
+# column wins for that covariate. The EDA only records separation at or above
+# its separation_threshold (default 0.95), so a lower min_share adds nothing.
+# Review first: separation can be a real association rather than a coding
+# restriction — eda/filter_suggested.yaml lists the columns this would hit.
+restrict_separated: {min_share: 0.95, covariates: [SEX, COHORT]}
+
+# Samples with no value for the restriction covariate:
+#   na   (default) set to NA as well
+#   keep leave their values unchanged
+restrict_unknown: na

@@ -1,0 +1,52 @@
+# test_data/PMBB/pmbb_test_filter.yaml
+#
+# Synthetic filter config for the PMBB test cohort. Exercises every
+# filter_phenotypes.py key against the test columns (BMI_*, HDLC_*, SEX,
+# COHORT, ANCESTRY_*, I11.9, N80.0, E11.9).
+#
+# In the pipeline (needs --run_gather --run_eda):
+#   nextflow run main.nf -profile test --run_eda \
+#       --sample_list test_data/PMBB/filter/roster.txt \
+#       --filter_config test_data/PMBB/pmbb_test_filter.yaml
+#
+# Standalone, against the frozen EDA outputs in test_data/PMBB/filter/ (made
+# with the full P001-P005 roster, test_data/PMBB/filter/roster.txt):
+#   python bin/filter_phenotypes.py --config test_data/PMBB/pmbb_test_filter.yaml \
+#       --input test_data/PMBB/filter/phenotype_table.wide.tsv \
+#       --covariates test_data/PMBB/filter/eda_covariates.tsv \
+#       --summary test_data/PMBB/filter/eda_summary.tsv \
+#       --manifest test_data/PMBB/filter/phenotype_manifest.tsv \
+#       --output_dir test_results/filtered
+#
+# Expected filter_log.tsv:
+#   HDLC_std                        dropped     drop_columns
+#   BMI_std                         dropped     drop_flags: zero_variance
+#   ANCESTRY_EAS / _OTH / _SAS      dropped     drop_flags: low_cases
+#   ANCESTRY_AMR                    kept        keep_columns overrides low_cases
+#   I11.9                           dropped     drop_flags: low_cases (1 case)
+#   N80.0                           restricted  SEX == 0 (explicit; P004 is male
+#                                               with a synthetic N80.0 "miscode",
+#                                               so 1 case is set to NA) and
+#                                               COHORT == 1|2 (A|B, separated)
+#   E11.9                           restricted  COHORT == 1 (A, separated)
+#   ANCESTRY_EUR                    restricted  COHORT == 3 (C, separated) — a
+#                                               coincidence of the tiny cohort,
+#                                               i.e. why restrict_separated
+#                                               needs review
+
+drop_columns:
+  - HDLC_std
+
+keep_columns:
+  - ANCESTRY_AMR
+
+drop_flags: [empty, zero_variance, single_level, low_cases]
+
+restrictions:
+  "N80.0": {covariate: SEX, level: "0"}
+
+# Data-driven: restrict every column whose cases the EDA found confined to a
+# COHORT level or subset of levels (levels are codes: A=1, B=2, C=3).
+restrict_separated: {min_share: 0.95, covariates: [COHORT]}
+
+restrict_unknown: na
