@@ -1,0 +1,44 @@
+# community/filter.yaml
+#
+# Recommended post-processing filter for a gathered wide phenotype table.
+# See examples/filter_example.yaml for what every key means.
+# Starting point only — not a validated deployment config. Prefer starting
+# from your own run's eda/filter_suggested.yaml (written by --run_eda), which
+# lists the exact columns flagged in your data; use this file for the
+# rule-based keys (drop_flags, restrict_separated) that carry across runs.
+#
+# Usage:
+#   nextflow run main.nf <same args> --run_gather --run_eda \
+#       --filter_config my_filter.yaml -resume
+#
+# Raw outputs are never modified; results go to {output_dir}/filtered/.
+#
+# Before use, check:
+#   - `level` is the covariate LEVEL CODE from eda/eda_covariates.tsv, not the
+#     label. With a SEX dictionary of {female: 0, male: 1}, female is "0".
+#   - `covariate` must be one of your eda.covariates (here: SEX, COHORT).
+#   - Restriction globs match OUTPUT COLUMN NAMES. If your coded phenotypes set
+#     column_prefix (e.g. icd10_), prefix the globs ("icd10_O*"). Unmatched
+#     patterns only warn.
+
+# Rule-based drops (need eda/eda_summary.tsv, supplied automatically in the
+# pipeline). Drop structurally useless columns; add low_cases / high_missing
+# only if your downstream analysis can't handle them.
+drop_flags: [empty, zero_variance, single_level]
+# drop_flags: [empty, zero_variance, single_level, low_cases, high_missing]
+
+drop_columns: []        # explicit names / globs, e.g. ["*_std"]
+keep_columns: []        # always kept — overrides drop_columns and drop_flags
+
+restrictions: {}
+# Sex-specific codes: paste the restrictions block(s) for your vocabulary from
+# community/sex_specific/ (icd10.yaml, icd9.yaml, phecode12.yaml, phecodeX.yaml).
+
+# Data-driven restrictions from the EDA (any covariate, e.g. sex or cohort):
+# columns whose cases are >= min_share confined to one level, or a subset of
+# levels, are restricted to it. Review eda/filter_suggested.yaml first — it
+# lists the columns this hits; separation can be a real association.
+# restrict_separated: {min_share: 0.95, covariates: [SEX, COHORT]}
+
+# Samples with no value for a restriction covariate: na (default, conservative) or keep.
+restrict_unknown: na

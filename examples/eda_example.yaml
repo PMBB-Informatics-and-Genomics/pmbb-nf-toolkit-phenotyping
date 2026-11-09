@@ -1,0 +1,140 @@
+# eda_example.yaml — EDA / QC report configuration (--run_eda)
+#
+# A minimal biobank config showing every EDA-related key. The `eda:` block and
+# the per-phenotype `eda` / `restrict_to` keys live in your normal biobank
+# config; paste the parts you need. Paths are placeholders.
+#
+#   nextflow run main.nf --biobank_config my_config.yaml \
+#       --sample_list samples.txt --run_eda ...
+#
+# Pass --sample_list: it is the denominator for missingness and, for coded
+# phenotypes, the roster that makes controls exist at all.
+#
+# Two separate things are configured here:
+#   1. eda:            report settings — flag thresholds, covariates, profile
+#                      limits. Metrics and flags are computed for EVERY column.
+#   2. eda (per-phenotype key) — only decides which columns also get a costly
+#                      ydata HTML profile. Cascades global → data_types → phenotype.
+#
+# The EDA never changes phenotype data. Its suggestions are written to
+# eda/filter_suggested.yaml; act on them with --filter_config
+# (see examples/filter_example.yaml). Known sex-specific code lists are not
+# built in — see community/sex_specific/ for filter restrictions blocks.
+#
+# Unknown eda: keys stop the run at RESOLVE_CONFIG. Every key below is optional;
+# values shown are the defaults unless marked otherwise.
+# See also: community/eda.yaml for recommended production settings.
+
+global:
+  sample_id_col: SAMPLE_ID
+  # eda: false            # opt every phenotype out of profiling, then opt in below
+
+eda:
+  # ── Covariates ─────────────────────────────────────────────────────────────
+  # Separation and missingness are checked against these. Preferred: names of
+  # phenotypes defined in this config — their outputs are reused, so the level
+  # coding comes from their `dictionary`. Quantitative covariates use their
+  # first stat column. Default: [] (no separation / missingness-gap checks).
+  covariates: [SEX, AGE, COHORT]
+
+  # Alternative / addition: an external table keyed by global.sample_id_col.
+  # Relative paths resolve against this config file's directory.
+  # covariates_file: /path/to/covariates.tsv
+  # covariates_file_cols: [SITE]      # columns to use (default: all)
+
+  age_bins: 5                 # numeric covariates with > max_covariate_levels
+  max_covariate_levels: 10    #   distinct values are split into age_bins quantiles
+
+  # ── Flag thresholds ────────────────────────────────────────────────────────
+  min_cases: 100              # binary column with fewer cases        → low_cases
+  max_missing: 0.5            # missing fraction above this           → high_missing
+  # Separation (data-driven, every covariate above): for each binary column the
+  # smallest set of levels holding >= separation_threshold of its cases.
+  # Reported per column as sep_type / sep_covariate / sep_level / sep_share in
+  # eda_summary.tsv; act on it with restrict_separated in a filter config.
+  separation_threshold: 0.95  # share of cases inside a level / subset → separation_quasi
+                              #   (all of them → separation_complete)
+  max_subset_levels: 3        # multi-level covariates (cohort, site): also test
+                              #   subsets of up to N levels, e.g. sep_level "1|2"
+  separation_min_cases: 10    # columns with fewer cases are never tested — 1-2
+                              #   cases that happen to share a level are not flagged
+  # Combinations of covariates, each tested as one more covariate named and
+  # levelled with "&" (COHORT&SEX = "1&0": cohort 1, female). 'auto' = every
+  # pair of covariates. Separation only (not missing_by_covariate). Results a
+  # single covariate already explains are dropped. Default: [] (none).
+  separation_interactions: [[COHORT, SEX]]
+  min_level_n: 50             # need >= 2 covariate levels this large to test
+  min_expected: 5             # expected cases outside the level / subset needed
+                              #   before separation is flagged (skips rare columns)
+  missing_gap: 0.8            # missingness gap between levels        → missing_by_covariate
+
+  # ── Profiles (bounded) ─────────────────────────────────────────────────────
+  # Profiled = columns opted in via the `eda` cascade + the most severe flagged
+  # columns, capped, one report per phenotype in groups, run in parallel.
+  profile_flagged_top_k: 50   # also profile the N most severe flagged columns
+  max_profile_columns: 200    # hard cap on profiled columns
+  profile_group_size: 50      # columns per profile report
+  profile_max_samples: 20000  # downsample each profile (cases of rare binaries kept)
+  profile_correlations: false # true = ydata 'auto' correlations (slow)
+  flagged_table_max_rows: 5000  # rows shown in eda_report.html's flagged table
+  seed: 42                    # downsampling seed
+
+  # ── Pairwise duplicate / nested detection (opt-in) ─────────────────────────
+  pairwise: false             # true → pairwise_duplicate / pairwise_nested flags
+  pairwise_jaccard: 0.95      # case-set Jaccard ≥ this → duplicate
+  pairwise_containment: 0.99  # ≥ this share of cases inside another column → nested
+  pairwise_top_k: 1000        # rows kept in eda/pairwise_overlap.tsv
+  pairwise_scope: all         # all | within_phenotype
+
+data_types:
+  quantitative:
+    eda: true                 # default: profiled
+  categorical:
+    eda: true                 # default: profiled
+  coded:
+    eda: false                # default: not profiled (explodes into many columns)
+
+phenotypes:
+  SEX:
+    table: /path/to/demographics.tsv
+    data_type: categorical
+    value_col: SEX
+    dictionary:               # levels in the report / filter use these codes
+      female: 0
+      male: 1
+
+  COHORT:
+    table: /path/to/demographics.tsv
+    data_type: categorical
+    value_col: COHORT
+    dictionary: {A: 1, B: 2, C: 3, D: 4}
+
+  AGE:
+    table: /path/to/demographics.tsv
+    data_type: quantitative
+    value_col: AGE
+    stats: [mean]
+
+  BMI:
+    table: /path/to/vitals.tsv
+    data_type: quantitative
+    value_col: BMI
+    eda: false                # skip this phenotype's profile (still gets flags)
+
+  ICD10:
+    table: /path/to/icd.tsv
+    data_type: coded
+    value_col: ICD_CODE
+    subsample: all
+    eda: ["E11*", I10]        # profile only these exploded codes (globs ok)
+
+  PCOS:
+    table: /path/to/icd.tsv
+    data_type: coded
+    value_col: ICD_CODE
+    subsample: [E28.2]
+    # A priori restriction {covariate: level label}. The covariate must be in
+    # eda.covariates (or covariates_file). Never applied to outputs — listed in
+    # eda/restriction_suggestions.tsv and written as an active entry in
+    # eda/filter_suggested.yaml.
+    restrict_to: {SEX: female}

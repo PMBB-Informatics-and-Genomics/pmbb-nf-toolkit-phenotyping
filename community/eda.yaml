@@ -1,0 +1,67 @@
+# community/eda.yaml
+#
+# Recommended EDA / QC settings for a production-scale biobank run
+# (thousands of phenotypes × tens of thousands of samples).
+# See examples/eda_example.yaml for what every key means.
+# Starting point only — not a validated deployment config; tune thresholds to
+# your cohort size.
+#
+# Usage:
+#   Paste the `eda:` block (and, optionally, the cascade keys below it) into your
+#   biobank config, then run with:
+#     nextflow run main.nf --biobank_config my_biobank_config.yaml \
+#         --sample_list samples.txt --run_eda ...
+#
+#   `covariates` must name phenotypes defined in the same biobank config (their
+#   pipeline outputs are reused, so levels follow their `dictionary`). Rename
+#   SEX / AGE / COHORT / BATCH below to match yours. Unknown keys stop the run at
+#   RESOLVE_CONFIG; the full list with defaults is EDA_DEFAULTS in
+#   bin/resolve_config.py.
+
+eda:
+  covariates: [SEX, AGE, COHORT, BATCH]   # phenotype names in your biobank config
+  # covariates_file: /path/to/covariates.tsv   # optional external table keyed by global.sample_id_col
+  # covariates_file_cols: [SITE]
+  age_bins: 5                     # numeric covariates with > max_covariate_levels values → quantile bins
+  max_covariate_levels: 10
+
+  # ── Flag thresholds ──────────────────────────────────────────────────────────
+  min_cases: 100                  # binary, fewer cases → low_cases
+  max_missing: 0.5                # → high_missing
+  separation_threshold: 0.95      # share of cases inside a level / subset → separation_quasi
+  max_subset_levels: 3            # cohort / site: also test subsets of up to 3 levels
+  separation_min_cases: 10        # ignore columns with fewer cases (rare → chance)
+  separation_interactions: [[COHORT, SEX]]   # or auto (every pair; more output to review)
+  min_level_n: 50                 # ignore covariate levels smaller than this
+  min_expected: 5                 # expected cases outside a level before separation counts
+  missing_gap: 0.8                # → missing_by_covariate
+
+  # ── Profiles (bounded) ───────────────────────────────────────────────────────
+  profile_flagged_top_k: 50
+  max_profile_columns: 200
+  profile_group_size: 50
+  profile_max_samples: 20000
+  profile_correlations: false
+  flagged_table_max_rows: 5000
+
+  # ── Pairwise duplicate / nested detection (opt-in; costly on wide tables) ───
+  pairwise: false
+  pairwise_jaccard: 0.95
+  pairwise_containment: 0.99
+  pairwise_top_k: 1000
+  pairwise_scope: within_phenotype  # 'all' compares across phenotypes too
+
+  seed: 42
+
+# ── Profile cascade (optional) ─────────────────────────────────────────────────
+# Which columns get a ydata profile. Metrics and flags are computed for every
+# column regardless. Built-in defaults: on for quantitative/categorical, off for
+# coded/advanced_coded. Merge these into the matching sections of your config.
+#
+# data_types:
+#   quantitative: {eda: true}
+#   coded:        {eda: false}
+#
+# phenotypes:
+#   ICD10: {eda: ["E11*", "I10*"]}          # profile only these exploded codes
+#   PCOS:  {restrict_to: {SEX: female}}     # a priori restriction → filter_suggested.yaml

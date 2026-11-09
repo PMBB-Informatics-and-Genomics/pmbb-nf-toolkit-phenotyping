@@ -1,0 +1,13 @@
+name: pmbb-phenotyping
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.8
+  - numpy
+  - pandas
+  - pyyaml
+  - scipy
+  - pip
+  - pip:
+      - fg-data-profiling  # optional: ydata profiles in the EDA report

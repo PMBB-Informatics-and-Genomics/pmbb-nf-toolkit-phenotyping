@@ -1,0 +1,16 @@
+column_name	source_file	phenotype	data_type	kind	is_covariate	n_total	n	n_missing	missing_frac	n_cases	n_controls	case_frac	mean	sd	min	p01	p50	p99	max	n_unique	n_levels	min_level_count	sep_type	sep_covariate	sep_level	sep_outcome	sep_share	sep_detail	miss_gap	miss_gap_covariate	miss_gap_detail	code	flags	severity
+ANCESTRY_AFR	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	2.0	3.0	0.4								2			complete	SEX&COHORT	0&1|0&2	cases	1.0	SEX&COHORT=0&1|0&2:complete:cases(1.000)	0.0	SEX	0=0.000;1=0.000		separation_complete	6
+ANCESTRY_EUR	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	2.0	3.0	0.4								2			complete	COHORT	3	cases	1.0	COHORT=3:complete:cases(1.000)	0.0	SEX	0=0.000;1=0.000		separation_complete	6
+E11.9	E11.9.diag.tsv	ICD10	coded	binary	False	5	5	0	0.0	2.0	3.0	0.4								2			complete	COHORT	1	cases	1.0	COHORT=1:complete:cases(1.000)	0.0	SEX	0=0.000;1=0.000	E11.9	separation_complete	6
+N80.0	N80.0.diag.tsv	ICD10	coded	binary	False	5	5	0	0.0	3.0	2.0	0.6								2			complete	COHORT	1|2	cases	1.0	COHORT=1|2:complete:cases(1.000)	0.0	SEX	0=0.000;1=0.000	N80.0	separation_complete	6
+ANCESTRY_AMR	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	1.0	4.0	0.2								2									0.0	SEX	0=0.000;1=0.000		low_cases	4
+ANCESTRY_EAS	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	0.0	5.0	0.0								1									0.0	SEX	0=0.000;1=0.000		low_cases	4
+ANCESTRY_OTH	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	0.0	5.0	0.0								1									0.0	SEX	0=0.000;1=0.000		low_cases	4
+ANCESTRY_SAS	ANCESTRY.cat.tsv	ANCESTRY	categorical	binary	False	5	5	0	0.0	0.0	5.0	0.0								1									0.0	SEX	0=0.000;1=0.000		low_cases	4
+HDLC_std	HDLC.quant.tsv	HDLC	quantitative	quantitative	False	5	0	5	1.0											0									0.0	SEX	0=1.000;1=1.000		empty,high_missing	4
+I11.9	I11.9.diag.tsv	ICD10	coded	binary	False	5	5	0	0.0	1.0	4.0	0.2								2									0.0	SEX	0=0.000;1=0.000	I11.9	low_cases	4
+BMI_std	BMI.quant.tsv	BMI	quantitative	quantitative	False	5	1	4	0.8				0.4949747468305853		0.4949747468305853	0.4949747468305853	0.4949747468305853	0.4949747468305853	0.4949747468305853	1									0.5	COHORT	1=0.500;2=1.000;3=1.000		high_missing,zero_variance	3
+BMI_mean	BMI.quant.tsv	BMI	quantitative	quantitative	False	5	4	1	0.2				29.937500000000004	4.700598366165738	24.1	24.2395	30.225	35.095	35.2	4									0.5	COHORT	1=0.000;2=0.000;3=0.500			0
+COHORT	COHORT.cat.tsv	COHORT	categorical	categorical	True	5	5	0	0.0											3	3.0	1.0												0
+HDLC_mean	HDLC.quant.tsv	HDLC	quantitative	quantitative	False	5	4	1	0.2				51.5	9.03696114115064	41.0	41.21	51.5	61.79	62.0	4									0.5	COHORT	1=0.000;2=0.000;3=0.500			0
+SEX	SEX.cat.tsv	SEX	categorical	binary	True	5	5	0	0.0	2.0	3.0	0.4								2														0

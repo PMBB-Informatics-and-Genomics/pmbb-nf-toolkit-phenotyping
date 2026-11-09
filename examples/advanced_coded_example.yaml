@@ -1,0 +1,205 @@
+# Advanced coded phenotype example — data_type: advanced_coded
+#
+# Use advanced_coded when you want a single named case/control column built from
+# code patterns (e.g. "T2Diab: 1/0/NA") rather than one column per code value.
+# Works with any vocabulary: ICD, CPT, SNOMED, LOINC, phecodes, etc.
+#
+# Key differences from data_type: coded
+#   - Produces one output column per phenotype (not one per code value)
+#   - Reads from one or more existing coded phenotypes via from_phenotype
+#   - Supports case/exclude logic across multiple sources
+#   - Sources can mix vocabularies (e.g. ICD10 diagnoses + CPT procedures)
+#   - prefix_matching: true (default) — bare codes prefix-match sub-codes (ICD-style)
+#   - prefix_matching: false — bare codes are exact (CPT, SNOMED, LOINC, phecodes)
+#     Set at the phenotype level or per source; source-level wins.
+#
+# Basic coded phenotypes that feed each source must also be defined in your config.
+# See basic_config_example.yaml for setup of ICD10, CPT, LOINC, SNOMED sources.
+
+global:
+  sample_id_col: PMBB_ID
+  reference_date: "2024-01-01"
+
+data_types:
+  coded:
+    min_occurrences: 1
+    missing_as_control: false
+
+phenotypes:
+
+  # ── Source phenotypes (feed into advanced_coded via from_phenotype) ───────────
+
+  ICD10:
+    table: /path/to/icd.txt
+    data_type: coded
+    value_col: ICD_CODE
+    filter:
+      CODE_TYPE: [ICD10]
+    subsample: all
+
+  ICD9:
+    table: /path/to/icd9.txt
+    data_type: coded
+    value_col: ICD_CODE
+    filter:
+      CODE_TYPE: [ICD9]
+    subsample: all
+
+  CPT:
+    table: /path/to/procedures.txt
+    data_type: coded
+    value_col: CPT_CODE
+    subsample: all
+
+  SNOMED:
+    table: /path/to/snomed.txt
+    data_type: coded
+    value_col: SNOMED_CODE
+    subsample: all
+
+  LOINC:
+    table: /path/to/labs.txt
+    data_type: coded
+    value_col: LOINC_CODE
+    subsample: all
+
+  # ── Example 1: ICD10 only — case + case_exclude ───────────────────────────────
+  # Type 2 Diabetes: E11 family is the case; E10/E12/E13 override to 0.
+  # min_occurrences applies per individual code, not per patient total.
+
+  T2Diab:
+    data_type: advanced_coded
+    missing_as_control: false
+    min_occurrences: 1
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - E11         # prefix match: E11.9, E11.65, E11.319, etc.
+          - O24.1       # exact match (has a dot) — gestational T2DM
+        case_exclude:
+          - E10         # type 1 diabetes overrides case
+          - E12
+          - E13
+
+  # ── Example 2: ICD10 only — case + control_exclude ───────────────────────────
+  # Abdominal Aortic Aneurysm: I71 is case; related vascular codes are ambiguous
+  # controls and set to NA rather than 0.
+
+  AAA:
+    data_type: advanced_coded
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes:
+          - I71
+        control_exclude:
+          - I70         # peripheral artery disease — not a clean control
+          - I72
+          - I73
+
+  # ── Example 3: ICD10 + ICD9 — cross-era multi-source ─────────────────────────
+  # Gout: pool ICD10 and ICD9 sources so patients coded in either era are captured.
+  # Both sources use hierarchical codes so prefix_matching: true (default).
+
+  Gout:
+    data_type: advanced_coded
+    missing_as_control: false
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        case_codes: [M10]
+        control_exclude: [M11]     # calcium pyrophosphate deposition — ambiguous
+      ICD9:
+        from_phenotype: ICD9
+        case_codes: ["274"]        # quote numeric ICD9 codes to preserve leading zeros
+        control_exclude: ["712"]
+
+  # ── Example 4: ICD10 + SNOMED — same condition, two vocabularies ──────────────
+  # Type 2 Diabetes coded across both ICD-10-CM and SNOMED CT.
+  # ICD10 source uses prefix matching (hierarchical); SNOMED source uses exact
+  # matching (concept IDs are not hierarchically encoded in the number itself).
+
+  T2Diab_multicode:
+    data_type: advanced_coded
+    missing_as_control: false
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        prefix_matching: true      # default; bare E11 matches E11.9, E11.65, etc.
+        case_codes: [E11]
+        case_exclude: [E10, E12, E13]
+      SNOMED:
+        from_phenotype: SNOMED
+        prefix_matching: false     # SNOMED concept IDs are exact identifiers
+        case_codes:
+          - "44054006"             # Type 2 diabetes mellitus
+          - "359642000"            # Type 2 diabetes mellitus in nonobese
+        case_exclude:
+          - "46635009"             # Type 1 diabetes mellitus
+
+  # ── Example 5: ICD10 + CPT — diagnosis confirmed by procedure ─────────────────
+  # Knee Replacement: patients who received a total knee arthroplasty, captured
+  # by either an ICD10 procedure code or a CPT billing code.
+  # CPT codes are non-hierarchical — use prefix_matching: false.
+
+  KneeReplacement:
+    data_type: advanced_coded
+    missing_as_control: false
+    sources:
+      ICD10_procedure:
+        from_phenotype: ICD10
+        prefix_matching: true
+        case_codes:
+          - 0SR9         # replacement, right knee joint (ICD10-PCS prefix)
+          - 0SRB         # replacement, left knee joint
+      CPT:
+        from_phenotype: CPT
+        prefix_matching: false     # CPT codes are not hierarchical
+        case_codes:
+          - "27447"                # total knee arthroplasty
+          - "27446"                # arthroplasty, knee, condyle and plateau
+
+  # ── Example 6: ICD10 + LOINC — phenotype requiring both diagnosis and test ────
+  # Diabetes with documented HbA1c measurement: patient has T2D diagnosis AND
+  # at least one HbA1c lab on record. Sources are pooled (OR logic), so patients
+  # with EITHER an ICD code OR a LOINC code count as cases.
+  # For strict AND logic, use event masking or a downstream filter instead.
+  # This example is most useful when the two vocabularies are alternative
+  # representations of the same concept.
+
+  DiabetesWithHbA1c:
+    data_type: advanced_coded
+    missing_as_control: true
+    sources:
+      ICD10:
+        from_phenotype: ICD10
+        prefix_matching: true
+        case_codes: [E11]
+        case_exclude: [E10, E12, E13]
+      LOINC:
+        from_phenotype: LOINC
+        prefix_matching: false     # LOINC codes are exact identifiers
+        case_codes:
+          - "4548-4"               # HbA1c (%)
+          - "17856-6"              # HbA1c [Moles/volume] in Blood
+
+  # ── Example 7: CPT only — procedure-based phenotype ──────────────────────────
+  # Coronary Artery Bypass Graft (CABG): defined entirely from CPT procedure codes.
+  # All CPT codes are exact — prefix_matching: false at the phenotype level applies
+  # to all sources.
+
+  CABG:
+    data_type: advanced_coded
+    prefix_matching: false         # applies to all sources unless overridden
+    missing_as_control: false
+    sources:
+      CPT:
+        from_phenotype: CPT
+        case_codes:
+          - "33533"                # CABG, arterial, single
+          - "33534"                # CABG, arterial, two
+          - "33535"                # CABG, arterial, three
+          - "33536"                # CABG, arterial, four or more
+          - "33510"                # CABG, venous, single
+          - "33511"                # CABG, venous, two
