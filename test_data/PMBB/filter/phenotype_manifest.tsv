@@ -1,0 +1,16 @@
+column_name	phenotype	data_type	code	flags
+ANCESTRY_AFR	ANCESTRY	categorical		separation_complete
+ANCESTRY_EUR	ANCESTRY	categorical		separation_complete
+ANCESTRY_AMR	ANCESTRY	categorical		low_cases
+ANCESTRY_EAS	ANCESTRY	categorical		low_cases
+ANCESTRY_SAS	ANCESTRY	categorical		low_cases
+ANCESTRY_OTH	ANCESTRY	categorical		low_cases
+COHORT	COHORT	categorical		
+SEX	SEX	categorical		
+E11.9	ICD10	coded	E11.9	separation_complete
+I11.9	ICD10	coded	I11.9	low_cases
+N80.0	ICD10	coded	N80.0	separation_complete
+BMI_mean	BMI	quantitative		
+BMI_std	BMI	quantitative		high_missing,zero_variance
+HDLC_mean	HDLC	quantitative		
+HDLC_std	HDLC	quantitative		empty,high_missing

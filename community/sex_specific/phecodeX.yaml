@@ -1,0 +1,86 @@
+# community/sex_specific/phecodeX.yaml
+#
+# Sex-specific phecodeX codes as a --filter_config restrictions block, derived
+# exactly from phecodeX_R_sex.csv from github.com/PheWAS/PhecodeX (descriptions:
+# phecodeX v1.1 info) — 255 female_only and 65 male_only of 3612 phecodeX codes
+# (241 / 64 here, after removing breast).
+# Globs were compressed only where, expanded against every code in that
+# file, they match exactly the sex-specific set (verified programmatically).
+# Copied from the source EXCEPT breast phecodes it marks sex-specific, which
+# are left out because men get breast disease (CA_105.1 / CA_105.2 breast
+# cancer, GU_610.x, GU_612.x) — consistent with the ICD lists. Kept as in the
+# source: CV_444.12 'Gastric varices' (marked male_only — looks like a source
+# error).
+#
+# Usage:
+#   - Copy into your filter config's `restrictions:` (merge blocks if combining
+#     vocabularies), or pass this file directly as --filter_config.
+#   - `level` is the LEVEL CODE from eda/eda_covariates.tsv. These assume a SEX
+#     phenotype with dictionary {female: 0, male: 1}; change covariate/level to
+#     match yours.
+#   - Keys match OUTPUT column names. If your coded phenotype sets
+#     column_prefix (e.g. phe_), prefix every key.
+#   - Samples outside the level are set to NA; cases among them are counted in
+#     filter_log.tsv as likely miscodes.
+#   - Not applied by the pipeline itself: post-processing for association tests.
+
+restrictions:
+  # ── Female (SEX level "0") ──────────────────────────────────────────────────
+  "CA_106*":   {covariate: SEX, level: "0"}   # Gynecological malignant neoplasms
+  "CA_144*":   {covariate: SEX, level: "0"}   # Gynecological benign neoplasms
+  "CM_760.1*": {covariate: SEX, level: "0"}   # Congenital malformations of female genitalia
+  "CV_444.14": {covariate: SEX, level: "0"}   # Vulval varices
+  "DE_684.21": {covariate: SEX, level: "0"}   # Hirsutism*
+  "EM_214":    {covariate: SEX, level: "0"}   # Disorders of ovarian function
+  "EM_214.1*": {covariate: SEX, level: "0"}   # Ovarian failure
+  "EM_214.2":  {covariate: SEX, level: "0"}   # Ovarian hyperfunction
+  "GE_961.82": {covariate: SEX, level: "0"}   # Genetic susceptibility to malignant neoplasm of ovary
+  "GE_961.84": {covariate: SEX, level: "0"}   # Genetic susceptibility to malignant neoplasm of endometrium
+  "GU_614":    {covariate: SEX, level: "0"}   # Inflammatory diseases of female pelvic organs
+  "GU_614.1":  {covariate: SEX, level: "0"}   # Pelvic peritoneal adhesions, female (postoperative) (postinfection)
+  "GU_614.3*": {covariate: SEX, level: "0"}   # Pelvic inflammatory disease (PID)
+  "GU_614.4":  {covariate: SEX, level: "0"}   # Inflammatory diseases of uterus, except cervix
+  "GU_614.5":  {covariate: SEX, level: "0"}   # Inflammatory disease of cervix, vagina, and vulva
+  "GU_614.51": {covariate: SEX, level: "0"}   # Cervicitis and endocervicitis
+  "GU_614.52": {covariate: SEX, level: "0"}   # Vaginitis and vulvovaginitis
+  "GU_614.53": {covariate: SEX, level: "0"}   # Cyst or abscess of Bartholin's gland
+  "GU_614.54": {covariate: SEX, level: "0"}   # Abscess or ulceration of vulva
+  "GU_615":    {covariate: SEX, level: "0"}   # Endometriosis
+  "GU_616*":   {covariate: SEX, level: "0"}   # Disorders of uterus, except cervix
+  "GU_617*":   {covariate: SEX, level: "0"}   # Noninflammatory disorders of cervix
+  "GU_618*":   {covariate: SEX, level: "0"}   # Noninflammatory disorders of vagina
+  "GU_619*":   {covariate: SEX, level: "0"}   # Noninflammatory disorders of ovary, fallopian tube, and broad ligament
+  "GU_620":    {covariate: SEX, level: "0"}   # Noninflammatory disorders of vulva and perineum
+  "GU_621*":   {covariate: SEX, level: "0"}   # Dysplasia of female genital organs
+  "GU_622*":   {covariate: SEX, level: "0"}   # Polyp of female genital organs
+  "GU_623*":   {covariate: SEX, level: "0"}   # Pelvic organ prolapse and fistulas
+  "GU_624*":   {covariate: SEX, level: "0"}   # Symptoms involving female genital tract
+  "GU_625*":   {covariate: SEX, level: "0"}   # Pain and other symptoms associated with female genital organs
+  "GU_626*":   {covariate: SEX, level: "0"}   # Disorders of menstruation and other abnormal bleeding from female genital tract
+  "GU_627*":   {covariate: SEX, level: "0"}   # Menopausal and postmenopausal disorders
+  "GU_629*":   {covariate: SEX, level: "0"}   # Female infertility
+  "MB_286.3":  {covariate: SEX, level: "0"}   # Premenstrual dysphoric disorder
+  "NS_331.63": {covariate: SEX, level: "0"}   # Menstrual migraine
+  "PP_*":      {covariate: SEX, level: "0"}   # PP category (all)
+  # ── Male (SEX level "1") ────────────────────────────────────────────────────
+  "CA_107*":   {covariate: SEX, level: "1"}   # Malignant neoplasm of male genitalia
+  "CA_139.54": {covariate: SEX, level: "1"}   # Testicular limpoma
+  "CA_146*":   {covariate: SEX, level: "1"}   # Benign neoplasm of male genital organs
+  "CM_760.2*": {covariate: SEX, level: "1"}   # Congenital congenital malformations of male genital organs
+  "CV_444.12": {covariate: SEX, level: "1"}   # Gastric varices*  (male_only in source — likely a source error)
+  "CV_444.15": {covariate: SEX, level: "1"}   # Scrotal varices [Varicocele]
+  "EM_215*":   {covariate: SEX, level: "1"}   # Testicular dysfunction
+  "GE_961.83": {covariate: SEX, level: "1"}   # Genetic susceptibility to malignant neoplasm of prostate
+  "GU_602*":   {covariate: SEX, level: "1"}   # Disorders of prostate
+  "GU_603":    {covariate: SEX, level: "1"}   # Disorders of testis
+  "GU_603.1":  {covariate: SEX, level: "1"}   # Hydrocele
+  "GU_603.2":  {covariate: SEX, level: "1"}   # Spermatocele
+  "GU_603.3":  {covariate: SEX, level: "1"}   # Torsion of testis
+  "GU_603.4":  {covariate: SEX, level: "1"}   # Atrophy of testis
+  "GU_603.5":  {covariate: SEX, level: "1"}   # Orchitis and epididymitis
+  "GU_604*":   {covariate: SEX, level: "1"}   # Disorders of penis
+  "GU_605*":   {covariate: SEX, level: "1"}   # Male sexual dysfuction
+  "GU_608":    {covariate: SEX, level: "1"}   # Other disorders of male genital organs
+  "GU_609*":   {covariate: SEX, level: "1"}   # Male infertility
+
+restrict_unknown: na

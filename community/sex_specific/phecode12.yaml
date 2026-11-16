@@ -1,0 +1,88 @@
+# community/sex_specific/phecode12.yaml
+#
+# Sex-specific phecode 1.2 codes as a --filter_config restrictions block, derived
+# exactly from the `sex_restriction` table shipped with the PheWAS R package
+# (github.com/PheWAS/PheWAS, data/sex_restriction) — 119 female_only and 34 male_only
+# of 1817 phecode 1.2 codes (110 / 33 here, after removing breast).
+# Globs were compressed only where, expanded against every code in that
+# file, they match exactly the sex-specific set (verified programmatically).
+# Copied from the source EXCEPT breast phecodes it marks sex-specific, which
+# are left out because men get breast disease (174.1x / 174.2 breast cancer,
+# 175, 610.x) — consistent with the ICD lists. Kept: 676 (breast / lactation
+# disorders of childbirth, a pregnancy complication).
+# ICD-9 and phecode 1.2 numbers overlap (e.g. 615): run them in separate
+# pipeline runs or give one of them a column_prefix.
+#
+# Usage:
+#   - Copy into your filter config's `restrictions:` (merge blocks if combining
+#     vocabularies), or pass this file directly as --filter_config.
+#   - `level` is the LEVEL CODE from eda/eda_covariates.tsv. These assume a SEX
+#     phenotype with dictionary {female: 0, male: 1}; change covariate/level to
+#     match yours.
+#   - Keys match OUTPUT column names. If your coded phenotype sets
+#     column_prefix (e.g. phe_), prefix every key.
+#   - Samples outside the level are set to NA; cases among them are counted in
+#     filter_log.tsv as likely miscodes.
+#   - Not applied by the pipeline itself: post-processing for association tests.
+
+restrictions:
+  # ── Female (SEX level "0") ──────────────────────────────────────────────────
+  "180*":   {covariate: SEX, level: "0"}   # Cervical cancer and dysplasia
+  "182":    {covariate: SEX, level: "0"}   # Malignant neoplasm of uterus
+  "184*":   {covariate: SEX, level: "0"}   # Cancer of other female genital organs
+  "218*":   {covariate: SEX, level: "0"}   # Benign neoplasm of uterus
+  "220":    {covariate: SEX, level: "0"}   # Benign neoplasm of ovary
+  "221":    {covariate: SEX, level: "0"}   # Benign neoplasm of other female genital organs
+  "256":    {covariate: SEX, level: "0"}   # Ovarian dysfunction
+  "256.4":  {covariate: SEX, level: "0"}   # Polycystic ovaries
+  "258.1":  {covariate: SEX, level: "0"}   # Postablative ovarian failure
+  "286.3":  {covariate: SEX, level: "0"}   # Coagulation defects complicating pregnancy or postpartum
+  "306.1":  {covariate: SEX, level: "0"}   # Mental disorders durring/after pregnancy
+  "614*":   {covariate: SEX, level: "0"}   # Inflammatory diseases of female pelvic organs
+  "615":    {covariate: SEX, level: "0"}   # Endometriosis
+  "618*":   {covariate: SEX, level: "0"}   # Genital prolapse
+  "619*":   {covariate: SEX, level: "0"}   # Noninflammatory female genital disorders
+  "620*":   {covariate: SEX, level: "0"}   # Dysplasia of female genital organs
+  "621":    {covariate: SEX, level: "0"}   # Endometrial hyperplasia
+  "622*":   {covariate: SEX, level: "0"}   # Polyp of female genital organs
+  "623":    {covariate: SEX, level: "0"}   # Hypertrophy of female genital organs
+  "624*":   {covariate: SEX, level: "0"}   # Symptoms involving female genital tract
+  "625*":   {covariate: SEX, level: "0"}   # Pain and other symptoms associated with female genital organs
+  "626*":   {covariate: SEX, level: "0"}   # Disorders of menstruation and other abnormal bleeding from female genital tract
+  "627*":   {covariate: SEX, level: "0"}   # Menopausal and postmenopausal disorders
+  "628":    {covariate: SEX, level: "0"}   # Ovarian cyst
+  "634*":   {covariate: SEX, level: "0"}   # Miscarriage; stillbirth
+  "635*":   {covariate: SEX, level: "0"}   # Hemorrhage during pregnancy; childbirth and postpartum
+  "636*":   {covariate: SEX, level: "0"}   # Early or threatened labor; hemorrhage in early pregnancy
+  "642*":   {covariate: SEX, level: "0"}   # Hypertension complicating pregnancy, childbirth, and the puerperium
+  "643*":   {covariate: SEX, level: "0"}   # Excessive vomiting in pregnancy
+  "644":    {covariate: SEX, level: "0"}   # Anemia during pregnancy
+  "646":    {covariate: SEX, level: "0"}   # Other complications of pregnancy NEC
+  "647*":   {covariate: SEX, level: "0"}   # Infectious and parasitic complications affecting pregnancy
+  "649*":   {covariate: SEX, level: "0"}   # Other conditions or status of the mother complicating pregnancy, childbirth, or the puerperium
+  "653":    {covariate: SEX, level: "0"}   # Problems associated with amniotic cavity and membranes
+  "654*":   {covariate: SEX, level: "0"}   # Other and unspecified complications of birth; puerperium affecting management of mother
+  "655*":   {covariate: SEX, level: "0"}   # Known or suspected fetal abnormality affecting management of mother
+  "669":    {covariate: SEX, level: "0"}   # Complications of labor and delivery NEC
+  "671":    {covariate: SEX, level: "0"}   # Venous/cerebrovascular complications embolism in pregnancy and the puerperium
+  "674":    {covariate: SEX, level: "0"}   # Other complications of the puerperium NEC
+  "676":    {covariate: SEX, level: "0"}   # Other disorders of the breast associated with childbirth and disorders of lactation
+  "751.11": {covariate: SEX, level: "0"}   # Congenital anomalies of female genital organs
+  "792*":   {covariate: SEX, level: "0"}   # Abnormal Papanicolaou smear of cervix and cervical HPV
+  # ── Male (SEX level "1") ────────────────────────────────────────────────────
+  "185":    {covariate: SEX, level: "1"}   # Cancer of prostate
+  "187*":   {covariate: SEX, level: "1"}   # Cancer of other male genital organs
+  "222":    {covariate: SEX, level: "1"}   # Benign neoplasm of male genital organs
+  "257*":   {covariate: SEX, level: "1"}   # Testicular dysfunction
+  "600":    {covariate: SEX, level: "1"}   # Hyperplasia of prostate
+  "601*":   {covariate: SEX, level: "1"}   # Inflammatory diseases of prostate
+  "602*":   {covariate: SEX, level: "1"}   # Other disorders of prostate
+  "603*":   {covariate: SEX, level: "1"}   # Other disorders of testis
+  "604*":   {covariate: SEX, level: "1"}   # Disorders of penis
+  "605":    {covariate: SEX, level: "1"}   # Erectile dysfunction [ED]
+  "608":    {covariate: SEX, level: "1"}   # Other disorders of male genital organs
+  "609*":   {covariate: SEX, level: "1"}   # Male infertility and abnormal spermatozoa
+  "751.12": {covariate: SEX, level: "1"}   # Congenital anomalies of male genital organs
+  "796":    {covariate: SEX, level: "1"}   # Elevated prostate specific antigen [PSA]
+
+restrict_unknown: na

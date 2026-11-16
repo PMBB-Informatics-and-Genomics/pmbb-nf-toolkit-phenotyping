@@ -1,0 +1,6 @@
+numpy
+pandas
+PyYAML
+pytest
+scipy
+fg-data-profiling  # optional: ydata profiles in the EDA report

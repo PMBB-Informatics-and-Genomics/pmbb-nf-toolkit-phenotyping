@@ -1,0 +1,144 @@
+# community/sex_specific/icd9.yaml
+#
+# Sex-specific ICD-9-CM codes as a --filter_config restrictions block.
+# Curated from ICD-9-CM chapter structure (CMS v32 code set): female/male
+# genital neoplasms (179-184, 218-221, 233.1-233.3, 236.0-236.3 / 185-187, 222,
+# 233.4-233.6, 236.4-236.6), ovarian/testicular dysfunction (256 / 257),
+# male genital organs (600-608), female genital organs (614-629), pregnancy
+# (630-679), genital anomalies (752.0-752.4 / 752.5-752.6, 752.81), Pap smear
+# findings (795.0-795.1), pregnancy V codes (V22-V24, V27-V28, V91), plus
+# explicitly sex-labelled infection, injury, history and screening codes.
+# Cross-checked against the phecodeX ICD map (github.com/PheWAS/PhecodeX,
+# phecodeX_R_map.csv + phecodeX_R_sex.csv): no key matches a code mapped to an
+# opposite-sex phecode. A starting point, not a validated list.
+#
+# Globs only start with the digit block they name, so none match V or E codes
+# (e.g. "61[4-9]*" cannot match V61.x). ICD-9 and phecode 1.2 numbers overlap
+# (e.g. 615): run them in separate pipeline runs or give one a column_prefix.
+#
+# Deliberately NOT included: breast (174-175, 217, 233.0, 610-611 — men get
+# breast disease), sex-chromosome conditions (758.6-758.8), 752.62 epispadias
+# (occurs in both sexes), 302.76 psychogenic dyspareunia, V02.51 Group B strep
+# carrier, V13.29, V25/V26 codes that apply to either partner.
+#
+# Usage:
+#   - Copy into your filter config's `restrictions:` (merge blocks if combining
+#     vocabularies), or pass this file directly as --filter_config.
+#   - `level` is the LEVEL CODE from eda/eda_covariates.tsv. These assume a SEX
+#     phenotype with dictionary {female: 0, male: 1}; change covariate/level to
+#     match yours.
+#   - Keys match OUTPUT column names (dotted codes, e.g. N80.0 / 617.1). If your
+#     coded phenotype sets column_prefix (e.g. icd_), prefix every key. Bare
+#     globs like "O*" also match any non-coded column starting with O.
+#   - Samples outside the level are set to NA; cases among them are counted in
+#     filter_log.tsv as likely miscodes.
+#   - Not applied by the pipeline itself: post-processing for association tests.
+
+restrictions:
+  # ── Female (SEX level "0") ──────────────────────────────────────────────────
+  "016.6*":       {covariate: SEX, level: "0"}   # Tuberculous oophoritis and salpingitis
+  "016.7*":       {covariate: SEX, level: "0"}   # Tuberculosis of other female genital organs
+  "054.11":       {covariate: SEX, level: "0"}   # Herpetic vulvovaginitis
+  "054.12":       {covariate: SEX, level: "0"}   # Herpetic ulceration of vulva
+  "098.1[5-7]":   {covariate: SEX, level: "0"}   # Gonococcal cervicitis / endometritis / salpingitis (acute)
+  "098.3[5-7]":   {covariate: SEX, level: "0"}   # Gonococcal cervicitis / endometritis / salpingitis (chronic)
+  "112.1":        {covariate: SEX, level: "0"}   # Candidiasis of vulva and vagina
+  "131.01":       {covariate: SEX, level: "0"}   # Trichomonal vulvovaginitis
+  "179*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of uterus, part unspecified
+  "180*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of cervix uteri
+  "181*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of placenta
+  "182*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of body of uterus
+  "183*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of ovary and other uterine adnexa
+  "184*":         {covariate: SEX, level: "0"}   # Malignant neoplasm of other/unspecified female genital organs
+  "198.6":        {covariate: SEX, level: "0"}   # Secondary malignant neoplasm of ovary
+  "218*":         {covariate: SEX, level: "0"}   # Uterine leiomyoma
+  "219*":         {covariate: SEX, level: "0"}   # Other benign neoplasm of uterus
+  "220*":         {covariate: SEX, level: "0"}   # Benign neoplasm of ovary
+  "221*":         {covariate: SEX, level: "0"}   # Benign neoplasm of other female genital organs
+  "233.1":        {covariate: SEX, level: "0"}   # Carcinoma in situ of cervix uteri
+  "233.2":        {covariate: SEX, level: "0"}   # Carcinoma in situ of other/unspecified parts of uterus
+  "233.3*":       {covariate: SEX, level: "0"}   # Carcinoma in situ of other/unspecified female genital organs
+  "236.[0-3]":    {covariate: SEX, level: "0"}   # Neoplasm of uncertain behavior of uterus / placenta / ovary / other female genital
+  "256*":         {covariate: SEX, level: "0"}   # Ovarian dysfunction
+  "302.73":       {covariate: SEX, level: "0"}   # Female orgasmic disorder
+  "306.51":       {covariate: SEX, level: "0"}   # Psychogenic vaginismus
+  "306.52":       {covariate: SEX, level: "0"}   # Psychogenic dysmenorrhea
+  "346.4*":       {covariate: SEX, level: "0"}   # Menstrual migraine
+  "456.6":        {covariate: SEX, level: "0"}   # Vulval varices
+  "61[4-9]*":     {covariate: SEX, level: "0"}   # Disorders of female genital organs (614-619)
+  "62[0-9]*":     {covariate: SEX, level: "0"}   # Disorders of female genital organs (620-629)
+  "6[3-6][0-9]*": {covariate: SEX, level: "0"}   # Complications of pregnancy, childbirth and the puerperium (630-669)
+  "67[0-9]*":     {covariate: SEX, level: "0"}   # Complications of the puerperium (670-679)
+  "752.[0-4]*":   {covariate: SEX, level: "0"}   # Congenital anomalies of ovaries, tubes, uterus, cervix, vagina, female external genitalia
+  "792.3":        {covariate: SEX, level: "0"}   # Nonspecific abnormal findings in amniotic fluid
+  "795.0*":       {covariate: SEX, level: "0"}   # Abnormal Papanicolaou smear of cervix and cervical HPV
+  "795.1*":       {covariate: SEX, level: "0"}   # Abnormal Papanicolaou smear of vagina and vaginal HPV
+  "796.5":        {covariate: SEX, level: "0"}   # Abnormal finding on antenatal screening
+  "867.[45]":     {covariate: SEX, level: "0"}   # Injury to uterus
+  "878.[4-7]":    {covariate: SEX, level: "0"}   # Open wound of vulva / vagina
+  "939.[12]":     {covariate: SEX, level: "0"}   # Foreign body in uterus / vulva and vagina
+  "996.32":       {covariate: SEX, level: "0"}   # Mechanical complication due to intrauterine contraceptive device
+  "V07.4":        {covariate: SEX, level: "0"}   # Hormone replacement therapy (postmenopausal)
+  "V10.4[0-4]":   {covariate: SEX, level: "0"}   # Personal history of malignant neoplasm of female genital organs
+  "V12.21":       {covariate: SEX, level: "0"}   # Personal history of gestational diabetes
+  "V13.2[1-4]":   {covariate: SEX, level: "0"}   # Personal history of pre-term labor / cervical, vaginal, vulvar dysplasia
+  "V15.21":       {covariate: SEX, level: "0"}   # Personal history of undergoing in utero procedure during pregnancy
+  "V22*":         {covariate: SEX, level: "0"}   # Normal pregnancy
+  "V23*":         {covariate: SEX, level: "0"}   # Supervision of high-risk pregnancy
+  "V24*":         {covariate: SEX, level: "0"}   # Postpartum care and examination
+  "V25.1*":       {covariate: SEX, level: "0"}   # Insertion/removal of intrauterine contraceptive device
+  "V25.3":        {covariate: SEX, level: "0"}   # Menstrual extraction
+  "V25.42":       {covariate: SEX, level: "0"}   # Surveillance of intrauterine contraceptive device
+  "V26.3[12]":    {covariate: SEX, level: "0"}   # Genetic testing of female
+  "V26.51":       {covariate: SEX, level: "0"}   # Tubal ligation status
+  "V27*":         {covariate: SEX, level: "0"}   # Outcome of delivery
+  "V28*":         {covariate: SEX, level: "0"}   # Antenatal screening
+  "V45.51":       {covariate: SEX, level: "0"}   # Presence of intrauterine contraceptive device
+  "V49.81":       {covariate: SEX, level: "0"}   # Asymptomatic postmenopausal status
+  "V72.3*":       {covariate: SEX, level: "0"}   # Routine gynecological examination
+  "V72.4*":       {covariate: SEX, level: "0"}   # Pregnancy examination or test
+  "V76.2":        {covariate: SEX, level: "0"}   # Screening for malignant neoplasms of cervix
+  "V76.46":       {covariate: SEX, level: "0"}   # Screening for malignant neoplasms of ovary
+  "V76.47":       {covariate: SEX, level: "0"}   # Screening for malignant neoplasms of vagina
+  "V84.02":       {covariate: SEX, level: "0"}   # Genetic susceptibility to malignant neoplasm of ovary
+  "V84.04":       {covariate: SEX, level: "0"}   # Genetic susceptibility to malignant neoplasm of endometrium
+  "V88.0*":       {covariate: SEX, level: "0"}   # Acquired absence of cervix and/or uterus
+  "V91*":         {covariate: SEX, level: "0"}   # Multiple gestation placenta status
+  # ── Male (SEX level "1") ────────────────────────────────────────────────────
+  "016.4*":       {covariate: SEX, level: "1"}   # Tuberculosis of epididymis
+  "016.5*":       {covariate: SEX, level: "1"}   # Tuberculosis of other male genital organs
+  "054.13":       {covariate: SEX, level: "1"}   # Herpetic infection of penis
+  "072.0":        {covariate: SEX, level: "1"}   # Mumps orchitis
+  "098.1[2-4]":   {covariate: SEX, level: "1"}   # Gonococcal prostatitis / epididymo-orchitis / seminal vesiculitis (acute)
+  "098.3[2-4]":   {covariate: SEX, level: "1"}   # Gonococcal prostatitis / epididymo-orchitis / seminal vesiculitis (chronic)
+  "131.03":       {covariate: SEX, level: "1"}   # Trichomonal prostatitis
+  "185*":         {covariate: SEX, level: "1"}   # Malignant neoplasm of prostate
+  "186*":         {covariate: SEX, level: "1"}   # Malignant neoplasm of testis
+  "187*":         {covariate: SEX, level: "1"}   # Malignant neoplasm of penis and other male genital organs
+  "214.4":        {covariate: SEX, level: "1"}   # Lipoma of spermatic cord
+  "222*":         {covariate: SEX, level: "1"}   # Benign neoplasm of male genital organs
+  "233.[4-6]":    {covariate: SEX, level: "1"}   # Carcinoma in situ of prostate / penis / other male genital organs
+  "236.[4-6]":    {covariate: SEX, level: "1"}   # Neoplasm of uncertain behavior of testis / prostate / other male genital
+  "257*":         {covariate: SEX, level: "1"}   # Testicular dysfunction
+  "302.74":       {covariate: SEX, level: "1"}   # Male orgasmic disorder
+  "302.75":       {covariate: SEX, level: "1"}   # Premature ejaculation
+  "456.4":        {covariate: SEX, level: "1"}   # Scrotal varices
+  "60[0-8]*":     {covariate: SEX, level: "1"}   # Diseases of male genital organs (600-608)
+  "752.5*":       {covariate: SEX, level: "1"}   # Undescended / retractile testis
+  "752.61":       {covariate: SEX, level: "1"}   # Hypospadias
+  "752.6[3-9]":   {covariate: SEX, level: "1"}   # Congenital chordee, micropenis, hidden penis, other penile anomalies
+  "752.81":       {covariate: SEX, level: "1"}   # Scrotal transposition
+  "778.6":        {covariate: SEX, level: "1"}   # Congenital hydrocele
+  "790.93":       {covariate: SEX, level: "1"}   # Elevated prostate specific antigen [PSA]
+  "792.2":        {covariate: SEX, level: "1"}   # Nonspecific abnormal findings in semen
+  "878.[0-3]":    {covariate: SEX, level: "1"}   # Open wound of penis / scrotum and testes
+  "939.3":        {covariate: SEX, level: "1"}   # Foreign body in penis
+  "V10.4[5-9]":   {covariate: SEX, level: "1"}   # Personal history of malignant neoplasm of male genital organs
+  "V13.61":       {covariate: SEX, level: "1"}   # Personal history of (corrected) hypospadias
+  "V26.3[459]":   {covariate: SEX, level: "1"}   # Genetic testing of male / male partner
+  "V26.52":       {covariate: SEX, level: "1"}   # Vasectomy status
+  "V76.44":       {covariate: SEX, level: "1"}   # Screening for malignant neoplasms of prostate
+  "V76.45":       {covariate: SEX, level: "1"}   # Screening for malignant neoplasms of testis
+  "V84.03":       {covariate: SEX, level: "1"}   # Genetic susceptibility to malignant neoplasm of prostate
+
+restrict_unknown: na
